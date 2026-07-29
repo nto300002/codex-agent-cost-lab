@@ -41,6 +41,10 @@
 | [実験タスクと境界](trace-crm/05-experiment-tasks-and-boundaries.md) | タスク作成要件、具体タスク、ハーネス境界 |
 | [実装・完成計画](trace-crm/06-delivery-plan.md) | 実装順序、完成条件、MVP外、未確定事項 |
 
+## 実装Issue
+
+実装順序、依存関係、受入条件を含むIssueバックログは [Issueバックログ](issues/README.md) を参照してください。
+
 ## 文書情報
 
 - 原資料作成日: 2026-07-28
