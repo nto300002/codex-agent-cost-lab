@@ -190,6 +190,70 @@ P3の過剰な `AGENTS.md` は主実験へ含めない。予算と時間に余�
 3. ワークスペースを次の試行へ再利用しない。
 4. 実行台帳へ完了、無効、失敗のいずれかを記録する。
 
+### 9.5 反復間の初期化
+
+反復は、同じ変更状態から作業を続ける再試行ではない。同一の「タスク×条件」を、毎回同じ開始状態から独立して実行する試行である。
+
+```text
+GA-F1 × P0 × run01
+GA-F1 × P0 × run02
+GA-F1 × P0 × run03
+GA-F1 × P0 × run04
+GA-F1 × P0 × run05
+```
+
+各反復では、次の状態を前回から引き継がない。
+
+- Codexが変更した追跡・未追跡ファイル
+- Git indexと作業ツリーの状態
+- SQLite DBとSeedの変更
+- テスト結果、ビルド生成物、一時ファイル
+- タスク条件として配置した `AGENTS.md`
+- Codexの会話、セッション、タスク固有の記憶
+
+#### 推奨方式
+
+現在の開発用checkoutを直接リセットせず、runごとに同じ基準コミットから一時worktreeを作る。
+
+1. run ID専用の空パスを決定する。
+2. タスクの開始コミットからdetached worktreeを作成する。
+3. DB、Seed、生成物、条件ファイルを初期化する。
+4. 新規Codexセッションで1試行だけ実行する。
+5. diff、未追跡ファイル、JSONL、評価結果をworktree外へ保存する。
+6. 成果物の存在とハッシュを確認する。
+7. 一時worktreeを破棄する。
+8. 次の反復では、新しい空のworktreeを作成する。
+
+概念上のコマンド例:
+
+```bash
+WORK_ROOT="/path/to/experiment-workspaces"
+WORK_DIR="$WORK_ROOT/$RUN_ID"
+RESULT_DIR="/path/to/results/raw/$RUN_ID"
+
+git worktree add --detach "$WORK_DIR" "$START_COMMIT"
+
+pnpm --dir "$WORK_DIR" db:reset
+
+# 条件ファイルの配置、Codex実行、外部評価
+
+git -C "$WORK_DIR" diff --binary > "$RESULT_DIR/diff.patch"
+git -C "$WORK_DIR" status --porcelain=v1 > "$RESULT_DIR/git-status.txt"
+
+# JSONL、評価結果、diffがRESULT_DIRに存在することを確認してから破棄する
+git worktree remove --force "$WORK_DIR"
+```
+
+`RESULT_DIR` は一時worktreeの外に置く。破棄前に、JSONL、diff、評価結果、テストログ、manifestが保存されていることを必ず検査する。
+
+#### 安全上の注意
+
+- `git reset --hard` や `git clean -fdx` を、開発者が使用しているcheckoutやリポジトリルートへ実行しない。
+- これらのコマンドが必要な場合は、実験ランナーが作成した一時worktree内だけを対象にする。
+- 削除対象は、run IDから解決した既知のworktreeパスであることを事前検証する。
+- 空の環境変数、`~`、`$HOME`、ワークスペースルートを削除・初期化対象にしない。
+- worktreeの破棄に失敗した場合は手動で強制削除せず、そのrunを停止してパスとGit登録状態を確認する。
+
 ## 10. 成果物
 
 各runについて次を保存する。
