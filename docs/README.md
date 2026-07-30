@@ -29,6 +29,7 @@
 | [測定と評価](experiment/04-metrics-and-evaluation.md) | 指標、成功判定、人手評価、集計、判断基準 |
 | [リスク・データ・テンプレート](experiment/05-risks-data-and-template.md) | バイアス、出力形式、ディレクトリ、タスク定義 |
 | [実施フェーズと報告](experiment/06-phases-and-reporting.md) | パイロット、本実験、LT表示、実施可否 |
+| [実験計画](experiment/07-experiment-plan.md) | 実験マトリクス、実行手順、停止条件、分析、成果物 |
 
 ## TraceCRM
 
