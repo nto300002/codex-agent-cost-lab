@@ -15,7 +15,19 @@
 | createdAt | DateTime | 自動 |
 | updatedAt | DateTime | 自動 |
 
-### 7.2 Customer
+### 7.2 Session
+
+| 項目 | 型 | 制約 |
+|---|---|---|
+| id | String | UUID、主キー |
+| tokenHash | String | 必須、一意、生トークンは保存しない |
+| userId | String | User参照 |
+| expiresAt | DateTime | 発行から8時間 |
+| createdAt | DateTime | 自動 |
+
+Cookieには `crypto.randomBytes(32)` で生成した生トークンを保存し、DBにはSHA-256 hashだけを保存する。
+
+### 7.3 Customer
 
 | 項目 | 型 | 制約 |
 |---|---|---|
@@ -29,7 +41,7 @@
 | createdAt | DateTime | 自動 |
 | updatedAt | DateTime | 自動 |
 
-### 7.3 Deal
+### 7.4 Deal
 
 | 項目 | 型 | 制約 |
 |---|---|---|
@@ -45,7 +57,7 @@
 
 金額は浮動小数点ではなく整数の最小通貨単位で保存する。
 
-### 7.4 Activity
+### 7.5 Activity
 
 | 項目 | 型 | 制約 |
 |---|---|---|
@@ -59,7 +71,7 @@
 | createdAt | DateTime | 自動 |
 | updatedAt | DateTime | 自動 |
 
-### 7.5 Tag
+### 7.6 Tag
 
 | 項目 | 型 | 制約 |
 |---|---|---|
@@ -67,7 +79,7 @@
 | name | String | 必須、一意、1〜50文字 |
 | createdAt | DateTime | 自動 |
 
-### 7.6 CustomerTag
+### 7.7 CustomerTag
 
 | 項目 | 型 | 制約 |
 |---|---|---|
@@ -76,13 +88,13 @@
 
 複合主キーを設定する。
 
-### 7.7 AuditLog
+### 7.8 AuditLog
 
 | 項目 | 型 | 制約 |
 |---|---|---|
 | id | String | UUID、主キー |
 | actorUserId | String | User参照 |
-| action | AuditAction | CREATE / UPDATE / DELETE / EXPORT / LOGIN |
+| action | AuditAction | CREATE / UPDATE / DELETE / EXPORT / LOGIN / LOGOUT / DISABLE / ROLE_CHANGE |
 | entityType | String | CUSTOMER / DEAL / ACTIVITY / USER |
 | entityId | String? | 対象ID |
 | beforeJson | String? | 変更前のJSON |
@@ -99,7 +111,10 @@
 
 - メールアドレスとパスワードによるローカル認証
 - Cookieベースのセッション
-- セッションはSQLiteまたは署名付きCookieで管理
+- セッションはSQLiteで管理し、Cookieには不透明な生トークンだけを保存
+- DBにはセッショントークンのSHA-256 hashだけを保存
+- セッション有効期限は発行から8時間、sliding expirationなし
+- ログアウト、ユーザー無効化、パスワード変更時にセッションを失効
 - OAuthは実装しない
 - パスワードの平文保存を禁止する
 - テスト用ユーザーをSeedで作成する

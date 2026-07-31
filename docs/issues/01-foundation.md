@@ -4,6 +4,8 @@
 
 - 種別: decision
 - 依存: なし
+- 状態: 決定済み
+- 決定記録: [ADR-0001: TraceCRM技術ベースライン](../decisions/0001-tracecrm-technology-baseline.md)
 - 目的: 実装と実験結果を揺らす技術選択を開始前に確定する。
 
 ### スコープ

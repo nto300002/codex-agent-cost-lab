@@ -143,21 +143,23 @@ LT参加者が業務仕様の説明を長く聞かなくても、修正・実装
 
 | 項目 | 技術 |
 |---|---|
-| 言語 | TypeScript |
-| ランタイム | Node.js 22系 |
-| パッケージ管理 | pnpm |
-| Webフレームワーク | Next.js App Router |
-| UI | React |
-| CSS | CSS ModulesまたはTailwind CSS |
+| 言語 | TypeScript 5.9.3 |
+| ランタイム | Node.js 24.18.0 LTS |
+| パッケージ管理 | pnpm 11.18.0 |
+| Webフレームワーク | Next.js 16.2.12 App Router |
+| UI | React 19.2.8 |
+| CSS | CSS Modules |
 | API | Next.js Route Handlers |
-| DBアクセス | Prisma |
+| DBアクセス | Prisma 7.9.1 |
 | DB | SQLite |
-| 入力検証 | Zod |
-| 単体・結合テスト | Vitest |
-| UI・E2E | Playwright |
-| 静的解析 | TypeScript、ESLint |
-| フォーマット | Prettier |
+| 入力検証 | Zod 4.4.3 |
+| 単体・結合テスト | Vitest 4.1.10 |
+| UI・E2E | Playwright 1.62.1 |
+| 静的解析 | TypeScript 5.9.3、ESLint 10.8.0 |
+| フォーマット | Prettier 3.9.6 |
 | バージョン管理 | Git |
+
+完全な固定値、採用理由、代替案は [ADR-0001: TraceCRM技術ベースライン](../decisions/0001-tracecrm-technology-baseline.md) を参照する。
 
 ### 5.2 バージョン固定
 
@@ -166,6 +168,8 @@ LT参加者が業務仕様の説明を長く聞かなくても、修正・実装
 - Node.jsのバージョンを`.nvmrc`または`.node-version`へ記載する
 - 実験開始後は依存パッケージを更新しない
 - 各実験結果へGitコミットIDを保存する
+- `package.json` の依存バージョンは範囲指定せず完全一致にする
+- native buildを許可する依存は `better-sqlite3` のみに限定する
 
 ### 5.3 開発コマンド
 
