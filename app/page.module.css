@@ -1,0 +1,50 @@
+.main {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 48px 24px;
+}
+
+.hero {
+  width: min(100%, 720px);
+  padding: clamp(32px, 7vw, 72px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: 0 24px 64px rgb(23 32 51 / 8%);
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(3rem, 10vw, 6rem);
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+}
+
+.description {
+  max-width: 38rem;
+  margin: 28px 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  line-height: 1.8;
+}
+
+.status {
+  display: inline-block;
+  margin: 32px 0 0;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #2949b8;
+  font-size: 0.875rem;
+  font-weight: 700;
+}

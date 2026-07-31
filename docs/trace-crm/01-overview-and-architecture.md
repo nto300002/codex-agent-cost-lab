@@ -155,7 +155,7 @@ LT参加者が業務仕様の説明を長く聞かなくても、修正・実装
 | 入力検証 | Zod 4.4.3 |
 | 単体・結合テスト | Vitest 4.1.10 |
 | UI・E2E | Playwright 1.62.1 |
-| 静的解析 | TypeScript 5.9.3、ESLint 10.8.0 |
+| 静的解析 | TypeScript 5.9.3、ESLint 9.39.5 |
 | フォーマット | Prettier 3.9.6 |
 | バージョン管理 | Git |
 

@@ -33,6 +33,7 @@
 
 - 種別: foundation
 - 依存: ISSUE-001
+- 状態: 実装済み
 - 目的: バージョン固定された最小のTypeScriptアプリを用意する。
 
 ### スコープ
@@ -41,20 +42,22 @@
 - ESLint、Prettier、CSS Modules
 - `.node-version` または `.nvmrc`
 - `packageManager` とロックファイル
-- `dev`、`build`、`lint`、`typecheck` コマンド
+- `dev`、`build`、`lint`、`typecheck`、`format`、`format:check` コマンド
 
 ### 受入条件
 
 - `pnpm install` と `pnpm build` が成功する。
+- `pnpm lint`、`pnpm typecheck`、`pnpm format:check` が成功する。
 - トップページをローカルで表示できる。
 - バージョンが設定ファイルとロックファイルで固定されている。
 
 ### 検証
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm lint
 pnpm typecheck
+pnpm format:check
 pnpm build
 ```
 

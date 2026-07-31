@@ -2,6 +2,7 @@
 
 - 状態: Accepted
 - 決定日: 2026-07-31
+- 更新日: 2026-08-01
 - 対象Issue: ISSUE-001
 - 適用範囲: TraceCRM基準実装、パイロット、本実験
 
@@ -35,13 +36,15 @@ TraceCRMは本番CRMではなく、Codexのプロンプト条件による探索�
 | Zod | 4.4.3 | API境界の入力検証に限定する |
 | Vitest | 4.1.10 | 単体・結合テスト |
 | Playwright | 1.62.1 | 対象を限定したE2Eテスト |
-| ESLint | 10.8.0 | `eslint-config-next` 16.2.12と組み合わせる |
+| ESLint | 9.39.5 | `eslint-config-next` 16.2.12のReactルールと実動作を確認した版 |
 | Prettier | 3.9.6 | 書式のみを担当させる |
 | tsx | 4.23.1 | SeedとローカルスクリプトのTypeScript実行 |
 
 補助型は `@types/node` 24.13.3、`@types/react` 19.2.18、`@types/react-dom` 19.2.4、`@types/better-sqlite3` 7.6.13を初期候補とする。
 
 `package.json` では範囲指定を使わず完全一致で保存し、`pnpm-lock.yaml` をコミットする。依存の更新は基準コミットを作る前だけ許可する。
+
+ESLint 10.8.0は `eslint-config-next` のpeer範囲を満たすが、内包される `eslint-plugin-react` 7.37.5がESLint 10のcontext APIへ未対応でlint実行に失敗したため、Issue 2の実動作検証で9.39.5へ変更した。
 
 ### 2.2 アプリケーション構成
 
