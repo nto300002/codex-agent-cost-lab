@@ -129,16 +129,24 @@ Codexは実行開始時にグローバルおよびプロジェクトの `AGENTS.
 ### 11.1 実行コマンド例
 
 ```bash
-codex exec \
+CODEX_HOME="$EXPERIMENT_CODEX_HOME" codex exec \
   --json \
+  --ephemeral \
+  --strict-config \
+  --model gpt-5.6-sol \
+  -c 'model_reasoning_effort="medium"' \
+  -c 'approval_policy="never"' \
+  -c 'features.fast_mode=false' \
+  -c 'features.multi_agent=false' \
+  -c 'features.memories=false' \
   --sandbox workspace-write \
-  --ignore-user-config \
   --ignore-rules \
   -C "$WORK_DIR" \
   "$(cat "$PROMPT_FILE")" \
-  > "$RESULT_DIR/codex.jsonl"
+  > "$RESULT_DIR/codex.jsonl" \
+  2> "$RESULT_DIR/stderr.log"
 ```
 
-実際の利用環境に応じてモデル名とreasoning effortを明示する。
+`EXPERIMENT_CODEX_HOME`には認証情報と固定した実験用 `config.toml` だけを置く。個人用AGENTS、MCP、Skill、memory、過去sessionを含めない。
 
 ---

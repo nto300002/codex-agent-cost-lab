@@ -98,30 +98,21 @@ TraceCRMは次を満たした時点で実験用アプリとして完成とする
 
 ---
 
-## 24. 設計上の未確定事項
+## 24. 設計判断
 
-実装開始前に固定する必要がある項目:
+未確定事項はISSUE-001で決定した。完全な決定、理由、代替案、固定時点は [ADR-0001: TraceCRM技術ベースライン](../decisions/0001-tracecrm-technology-baseline.md) を参照する。
 
-- Next.jsの具体的なバージョン
-- CSS ModulesまたはTailwind CSS
-- セッションをDB管理するか署名付きCookieにするか
-- Customer削除を物理削除にするか論理削除にするか
-- AuditLogを基準機能として完成させるか、GC-I1用の未実装機能にするか
-- E2Eを各試行後の成功判定に含めるか
-- 人間の標準作業時間を誰が測定するか
-- G-Cの最大実行時間と予算上限
-- Codexのモデルとreasoning effort
-- 実験用アプリを新規実装するか、既存テンプレートを基に作るか
-
-### 推奨初期決定
-
-- CSS: CSS Modules
-- セッション: DB管理
-- Customer削除: 物理削除をトランザクションで管理
-- AuditLog: 基本機構は存在し、GC-I1では適用範囲を拡張する
-- E2E: G-B/G-Cの成功判定に限定して使用
-- モデル・reasoning effort: パイロット開始前に固定
-- 実装: 新規作成し、不要な既存ルールを持ち込まない
+- Node.js 24.18.0、Next.js 16.2.12、React 19.2.8、pnpm 11.18.0
+- TypeScript 5.9.3、Prisma 7.9.1、SQLite adapter
+- CSS Modules
+- DB管理の不透明セッション、8時間固定期限
+- Customerは物理削除し、application層のトランザクションで関連削除とAuditLogを管理
+- AuditLog基盤を基準機能として実装し、GC-I1でCustomer・Deal・Activityへ拡張
+- G-Aは単体・結合、G-B/G-Cは対象E2Eを成功判定に使用
+- 人間時間は同一の熟練エンジニア1名がactive working timeを測定
+- G-Cは60分、200 credits/runを警戒上限とする
+- Codex CLI 0.144.4、`gpt-5.6-sol`、medium、Fast/Ultraなし
+- 新規実装とし、既存テンプレートの暗黙ルールを持ち込まない
 
 ---
 

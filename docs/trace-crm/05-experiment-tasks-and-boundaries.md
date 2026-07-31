@@ -21,7 +21,7 @@
 | GB-F1 | G-B | 修正 | MEMBERが担当外Dealを更新できる |
 | GB-I1 | G-B | 実装 | Customer一覧へStatus・Owner絞り込みを追加する |
 | GC-F1 | G-C | 修正 | Customer削除時に関連データとAuditLogの整合性が壊れる |
-| GC-I1 | G-C | 実装 | Customer・Deal・Userの主要操作へAuditLogを追加する |
+| GC-I1 | G-C | 実装 | Customer・Deal・Activityの主要操作へAuditLogを追加する |
 
 ### 17.3 タスクの独立性
 
@@ -155,7 +155,7 @@ Customer削除時にDeal・Activity・CustomerTagの一部が残り、AuditLog�
 
 ### 注意
 
-物理削除・論理削除のどちらを採るかは基準仕様で固定し、実験中に選択させない。
+基準仕様は物理削除とし、application層のトランザクションで関連削除とAuditLogを管理する。削除方式を実験中に選択させない。
 
 ---
 
@@ -163,18 +163,18 @@ Customer削除時にDeal・Activity・CustomerTagの一部が残り、AuditLog�
 
 ### 要求
 
-Customer、Deal、User管理の主要操作へ統一的なAuditLogを追加する。
+既存のAuditLog基盤を使い、Customer、Deal、Activityの主要操作へ統一的な監査記録を追加する。
 
 ### 受入条件
 
-- Customer: CREATE / UPDATE / DELETE
+- Customer: CREATE / UPDATE
 - Deal: CREATE / UPDATE / DELETE
-- User: ROLE_CHANGE / ACTIVATE / DEACTIVATE
+- Activity: CREATE / UPDATE / DELETE
 - Actor、Entity、変更前後、日時を記録
 - 機密情報を記録しない
 - 業務処理と同一トランザクション
 - 監査失敗時の扱いを仕様どおり統一
-- ADMIN用一覧・絞り込み
+- 既存のADMIN用一覧・絞り込みで追加ログを閲覧可能
 - 単体、結合、E2Eテスト
 
 ---

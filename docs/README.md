@@ -40,11 +40,17 @@
 | [機能要件](trace-crm/03-functional-requirements.md) | 各機能、API、UI、共通ルール、Seed |
 | [テストと非機能要件](trace-crm/04-testing-and-nonfunctional.md) | テスト戦略、再現性、品質、性能 |
 | [実験タスクと境界](trace-crm/05-experiment-tasks-and-boundaries.md) | タスク作成要件、具体タスク、ハーネス境界 |
-| [実装・完成計画](trace-crm/06-delivery-plan.md) | 実装順序、完成条件、MVP外、未確定事項 |
+| [実装・完成計画](trace-crm/06-delivery-plan.md) | 実装順序、完成条件、MVP外、設計判断 |
 
 ## 実装Issue
 
 実装順序、依存関係、受入条件を含むIssueバックログは [Issueバックログ](issues/README.md) を参照してください。
+
+## 設計判断
+
+| ADR | 内容 |
+|---|---|
+| [ADR-0001](decisions/0001-tracecrm-technology-baseline.md) | TraceCRMの技術、認証、削除、監査、E2E、実験上限、Codex条件 |
 
 ## 文書情報
 
