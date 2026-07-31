@@ -8,6 +8,27 @@ Codexのプロンプト設計と `AGENTS.md` が、AIエージェントのトー
 
 文書の構成と読む順番は [`docs/README.md`](docs/README.md) を参照してください。
 
+## Local development
+
+必要なツール:
+
+- Node.js 24.18.0
+- pnpm 11.18.0
+
+```bash
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+品質チェック:
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm format:check
+pnpm build
+```
+
 ## Status
 
-現在は要件定義・実験設計フェーズです。アプリケーションおよび実験ハーネスは今後実装します。
+要件定義と実験設計を完了し、TraceCRMのアプリケーション基盤を実装中です。実験ハーネスは今後実装します。
