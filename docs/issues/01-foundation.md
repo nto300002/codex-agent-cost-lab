@@ -97,6 +97,7 @@ pnpm db:seed
 
 - 種別: foundation
 - 依存: ISSUE-003
+- 状態: 実装済み
 - 目的: 各機能が共通利用する決定的なアプリケーション基盤を作る。
 
 ### スコープ
@@ -106,6 +107,7 @@ pnpm db:seed
 - 差し替え可能なClock
 - Prismaトランザクション境界
 - ログへ秘密情報を出さない共通方針
+- 後続機能を単体検証するための最小Vitest設定
 
 ### 受入条件
 
@@ -127,7 +129,7 @@ pnpm db:seed
 
 ### スコープ
 
-- Vitest、Playwright
+- Vitest設定拡張、Playwright
 - factory、fixture、DBテストhelper
 - `test:unit`、`test:integration`、`test:e2e`
 - `test:customer`、`test:deal`、`test:activity`、`test:auth`、`test:audit`
