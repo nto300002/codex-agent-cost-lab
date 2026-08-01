@@ -30,7 +30,7 @@ function sanitize(value: unknown, seen: WeakSet<object>): unknown {
   }
 
   if (value instanceof Error) {
-    return { name: value.name, message: value.message };
+    return { name: value.name, message: redacted };
   }
 
   if (Array.isArray(value)) {
