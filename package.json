@@ -9,26 +9,37 @@
     "pnpm": "11.18.0"
   },
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "db:ensure": "tsx scripts/ensure-database-file.ts",
+    "db:generate": "prisma generate",
+    "db:reset": "pnpm db:ensure && prisma migrate reset --force && prisma db seed",
+    "db:seed": "prisma db seed",
+    "db:verify": "tsx scripts/verify-seed.ts"
   },
   "dependencies": {
+    "@prisma/adapter-better-sqlite3": "7.9.1",
+    "@prisma/client": "7.9.1",
     "next": "16.2.12",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
+    "@types/better-sqlite3": "7.6.13",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.12",
     "prettier": "3.9.6",
+    "prisma": "7.9.1",
+    "tsx": "4.23.1",
     "typescript": "5.9.3"
   }
 }

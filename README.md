@@ -17,6 +17,7 @@ Codexのプロンプト設計と `AGENTS.md` が、AIエージェントのトー
 
 ```bash
 pnpm install --frozen-lockfile
+pnpm db:reset
 pnpm dev
 ```
 
@@ -28,6 +29,15 @@ pnpm typecheck
 pnpm format:check
 pnpm build
 ```
+
+固定Seedユーザーのパスワードはすべて `TraceCRM!2026` です。
+
+| Role    | Email                  |
+| ------- | ---------------------- |
+| ADMIN   | `admin@example.test`   |
+| MANAGER | `manager@example.test` |
+| MEMBER  | `member1@example.test` |
+| MEMBER  | `member2@example.test` |
 
 ## Status
 

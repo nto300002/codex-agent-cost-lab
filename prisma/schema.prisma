@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserRole {
+  MEMBER
+  MANAGER
+  ADMIN
+}
+
+enum CustomerStatus {
+  LEAD
+  ACTIVE
+  INACTIVE
+}
+
+enum DealStage {
+  NEW
+  QUALIFIED
+  PROPOSAL
+  WON
+  LOST
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  MEETING
+  NOTE
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  EXPORT
+  LOGIN
+  LOGOUT
+  DISABLE
+  ROLE_CHANGE
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  name         String
+  passwordHash String
+  role         UserRole
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  customers    Customer[] @relation("CustomerOwner")
+  deals        Deal[]     @relation("DealOwner")
+  activities   Activity[] @relation("ActivityCreator")
+  auditLogs    AuditLog[] @relation("AuditActor")
+
+  @@map("users")
+}
+
+model Customer {
+  id         String         @id @default(uuid())
+  name       String
+  email      String?
+  phone      String?
+  status     CustomerStatus
+  ownerId    String
+  notes      String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  owner      User           @relation("CustomerOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  deals      Deal[]
+  activities Activity[]
+  tags       CustomerTag[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([updatedAt])
+  @@map("customers")
+}
+
+model Deal {
+  id                String     @id @default(uuid())
+  customerId        String
+  title             String
+  amountCents       Int
+  stage             DealStage
+  ownerId           String
+  expectedCloseDate DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  customer          Customer   @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  owner             User       @relation("DealOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  activities        Activity[]
+
+  @@index([customerId])
+  @@index([ownerId])
+  @@index([stage])
+  @@map("deals")
+}
+
+model Activity {
+  id          String       @id @default(uuid())
+  customerId  String
+  dealId      String?
+  type        ActivityType
+  summary     String
+  occurredAt  DateTime
+  createdById String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  customer    Customer     @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  deal        Deal?        @relation(fields: [dealId], references: [id], onDelete: Restrict)
+  createdBy   User         @relation("ActivityCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([customerId])
+  @@index([dealId])
+  @@index([createdById])
+  @@index([occurredAt])
+  @@map("activities")
+}
+
+model Tag {
+  id        String        @id @default(uuid())
+  name      String        @unique
+  createdAt DateTime      @default(now())
+  customers CustomerTag[]
+
+  @@map("tags")
+}
+
+model CustomerTag {
+  customerId String
+  tagId      String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Restrict)
+
+  @@id([customerId, tagId])
+  @@index([tagId])
+  @@map("customer_tags")
+}
+
+model AuditLog {
+  id          String      @id @default(uuid())
+  actorUserId String
+  action      AuditAction
+  entityType  String
+  entityId    String?
+  beforeJson  String?
+  afterJson   String?
+  createdAt   DateTime    @default(now())
+  actor       User        @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([actorUserId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
