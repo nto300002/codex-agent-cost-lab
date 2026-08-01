@@ -12,6 +12,13 @@
 .env*
 !.env.example
 
+# generated database assets
+/generated/prisma/
+/prisma/*.db
+/prisma/*.db-journal
+/prisma/*.db-shm
+/prisma/*.db-wal
+
 # logs
 *.log
 pnpm-debug.log*
