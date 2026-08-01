@@ -34,4 +34,14 @@ describe("sanitizeForLog", () => {
 
     expect(sanitizeForLog(value)).toEqual({ child: "[CIRCULAR]" });
   });
+
+  it("redacts error messages that may contain secrets", () => {
+    const error = new Error(
+      "Database connection failed: postgres://user:password@localhost/db?token=secret",
+    );
+
+    expect(sanitizeForLog({ error })).toEqual({
+      error: { name: "Error", message: "[REDACTED]" },
+    });
+  });
 });
