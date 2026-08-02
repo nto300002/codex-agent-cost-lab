@@ -242,6 +242,7 @@ GC-I1で追加:
 ```text
 POST   /api/auth/login
 POST   /api/auth/logout
+GET    /api/auth/me
 
 GET    /api/customers
 POST   /api/customers

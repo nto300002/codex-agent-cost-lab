@@ -6,6 +6,7 @@ import { DatabaseSync } from "node:sqlite";
 import { createPrismaClient } from "../../src/infrastructure/database/client";
 
 const migrationsDirectory = path.resolve("prisma/migrations");
+const migrationDirectoryPattern = /^\d{14}_[a-z0-9_]+$/;
 
 async function applyMigrations(databasePath: string) {
   const migrationDirectories = (
@@ -13,7 +14,10 @@ async function applyMigrations(databasePath: string) {
       withFileTypes: true,
     })
   )
-    .filter((entry) => entry.isDirectory())
+    .filter(
+      (entry) =>
+        entry.isDirectory() && migrationDirectoryPattern.test(entry.name),
+    )
     .map((entry) => entry.name)
     .sort();
   const database = new DatabaseSync(databasePath);
