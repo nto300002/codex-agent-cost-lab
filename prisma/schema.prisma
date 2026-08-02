@@ -58,8 +58,22 @@ model User {
   deals        Deal[]     @relation("DealOwner")
   activities   Activity[] @relation("ActivityCreator")
   auditLogs    AuditLog[] @relation("AuditActor")
+  sessions     Session[]
 
   @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
 }
 
 model Customer {

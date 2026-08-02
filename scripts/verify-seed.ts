@@ -24,10 +24,14 @@ async function verifySeed() {
     tags: 8,
     customerTags: 80,
     auditLogs: 50,
+    sessions: 0,
   };
-  const actualCounts = Object.fromEntries(
-    Object.entries(snapshot).map(([name, records]) => [name, records.length]),
-  );
+  const actualCounts = {
+    ...Object.fromEntries(
+      Object.entries(snapshot).map(([name, records]) => [name, records.length]),
+    ),
+    sessions: await prisma.session.count(),
+  };
 
   if (JSON.stringify(actualCounts) !== JSON.stringify(expectedCounts)) {
     throw new Error(
