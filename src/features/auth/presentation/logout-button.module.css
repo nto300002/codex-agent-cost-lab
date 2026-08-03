@@ -1,0 +1,32 @@
+.button {
+  min-height: 44px;
+  margin-top: 28px;
+  padding: 10px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--foreground);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.button:focus-visible {
+  outline: 3px solid rgb(49 87 213 / 30%);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.error {
+  margin: 12px 0 0;
+  color: #a52020;
+  font-size: 0.875rem;
+}

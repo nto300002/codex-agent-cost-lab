@@ -20,7 +20,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm dev --hostname 127.0.0.1 --port ${port}`,
+    command:
+      `DATABASE_URL=file:./prisma/e2e.db pnpm db:ensure && ` +
+      `DATABASE_URL=file:./prisma/e2e.db pnpm exec prisma migrate deploy && ` +
+      `DATABASE_URL=file:./prisma/e2e.db pnpm db:seed && ` +
+      `DATABASE_URL=file:./prisma/e2e.db pnpm dev --hostname 127.0.0.1 --port ${port}`,
     url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000,

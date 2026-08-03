@@ -38,13 +38,28 @@
   line-height: 1.8;
 }
 
-.status {
-  display: inline-block;
+.userDetails {
+  display: grid;
+  gap: 12px;
   margin: 32px 0 0;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: #eef2ff;
-  color: #2949b8;
+}
+
+.userDetails div {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.userDetails dt {
+  color: var(--muted);
   font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.userDetails dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
   font-weight: 700;
 }
