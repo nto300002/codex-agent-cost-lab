@@ -15,7 +15,7 @@ import {
 
 type CustomerOperations = Pick<
   CustomerService<unknown>,
-  "list" | "get" | "create" | "update" | "delete"
+  "list" | "listOwners" | "get" | "create" | "update" | "delete"
 >;
 type AuthOperations = Pick<AuthService, "getCurrentUser">;
 type RouteContext = { params: Promise<{ id: string }> };
@@ -25,6 +25,21 @@ const customerIdSchema = z.string().trim().min(1, "顧客IDを指定してくだ
 function errorResponse(error: unknown) {
   const { status, body } = toHttpErrorResponse(error);
   return NextResponse.json(body, { status });
+}
+
+export function createCustomerOwnersHandler(
+  customers: Pick<CustomerOperations, "listOwners">,
+  auth: AuthOperations,
+) {
+  return async function GET(request: NextRequest) {
+    try {
+      const actor = await auth.getCurrentUser(sessionToken(request));
+      const owners = await customers.listOwners(actor);
+      return NextResponse.json({ data: { owners } });
+    } catch (error) {
+      return errorResponse(error);
+    }
+  };
 }
 
 async function readRequestBody(request: Request) {

@@ -38,6 +38,9 @@ function dependencies() {
     list: vi.fn().mockResolvedValue({ customers: [customer], total: 1 }),
     findById: vi.fn().mockResolvedValue(customer),
     activeOwnerExists: vi.fn().mockResolvedValue(true),
+    listActiveOwners: vi
+      .fn()
+      .mockResolvedValue([{ id: member.id, name: member.name }]),
     create: vi.fn().mockResolvedValue(customer),
     update: vi.fn().mockResolvedValue(customer),
     countRelations: vi.fn().mockImplementation(async () => {
@@ -77,6 +80,16 @@ function dependencies() {
 }
 
 describe("CustomerService", () => {
+  it("limits owner options for a member while administrators can see all", async () => {
+    const { repository, service } = dependencies();
+
+    await service.listOwners(member);
+    await service.listOwners(admin);
+
+    expect(repository.listActiveOwners).toHaveBeenNthCalledWith(1, member.id);
+    expect(repository.listActiveOwners).toHaveBeenNthCalledWith(2, undefined);
+  });
+
   it("restricts a member list to their own customers and returns pagination", async () => {
     const { repository, service } = dependencies();
     const result = await service.list(member, {

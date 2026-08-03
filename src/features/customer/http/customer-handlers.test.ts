@@ -4,7 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { AuthorizationError } from "../../../shared/errors/app-error";
 import { sessionCookieName } from "../../auth/http/auth-handlers";
-import { createCustomerCollectionHandlers } from "./customer-handlers";
+import {
+  createCustomerCollectionHandlers,
+  createCustomerOwnersHandler,
+} from "./customer-handlers";
 
 const actor = {
   id: "admin-1",
@@ -16,6 +19,7 @@ const actor = {
 function customerOperations(overrides: Record<string, unknown>) {
   return {
     list: vi.fn(),
+    listOwners: vi.fn(),
     get: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),
@@ -38,6 +42,23 @@ function request(
 }
 
 describe("customer handlers", () => {
+  it("returns authenticated owner options", async () => {
+    const listOwners = vi
+      .fn()
+      .mockResolvedValue([{ id: actor.id, name: actor.name }]);
+    const handler = createCustomerOwnersHandler(
+      { listOwners },
+      { getCurrentUser: vi.fn().mockResolvedValue(actor) },
+    );
+    const response = await handler(request("/api/customer-owners"));
+
+    expect(response.status).toBe(200);
+    expect(listOwners).toHaveBeenCalledWith(actor);
+    await expect(response.json()).resolves.toEqual({
+      data: { owners: [{ id: actor.id, name: actor.name }] },
+    });
+  });
+
   it("parses search and returns the common success envelope", async () => {
     const list = vi.fn().mockResolvedValue({
       customers: [],

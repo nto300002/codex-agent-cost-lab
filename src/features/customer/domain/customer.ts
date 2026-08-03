@@ -12,7 +12,11 @@ export type Customer = {
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;
+  owner?: { id: string; name: string };
+  tags?: Array<{ id: string; name: string }>;
 };
+
+export type CustomerOwner = { id: string; name: string };
 
 export type CustomerCreateData = Pick<
   Customer,

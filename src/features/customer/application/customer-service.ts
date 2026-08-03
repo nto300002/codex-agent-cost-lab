@@ -44,6 +44,14 @@ export class CustomerService<TTransaction> {
     };
   }
 
+  listOwners(actor: AuthenticatedUser) {
+    const ownerId =
+      authorizationScope(actor, "customer:create") === "owned"
+        ? actor.id
+        : undefined;
+    return this.repository.listActiveOwners(ownerId);
+  }
+
   async get(actor: AuthenticatedUser, id: string) {
     const customer = await this.findCustomer(id);
     authorize(actor, "customer:read", { ownerId: customer.ownerId });

@@ -1,0 +1,24 @@
+.pageHeader {
+  margin-bottom: 28px;
+}
+
+.pageHeader p {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pageHeader h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  letter-spacing: -0.045em;
+}
+
+.pageHeader span {
+  display: block;
+  margin-top: 10px;
+  color: var(--muted);
+}
