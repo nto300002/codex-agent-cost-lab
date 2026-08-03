@@ -27,7 +27,7 @@ export const permissions = [
 export type Permission = (typeof permissions)[number];
 export type AuthorizationActor = Pick<AuthenticatedUser, "id" | "role">;
 export type AccessContext = { ownerId?: string };
-type AccessScope = "none" | "owned" | "all";
+export type AccessScope = "none" | "owned" | "all";
 type UserRole = AuthenticatedUser["role"];
 
 export const authorizationMatrix = {
@@ -99,12 +99,19 @@ export const authorizationMatrix = {
   },
 } as const satisfies Record<UserRole, Record<Permission, AccessScope>>;
 
+export function authorizationScope(
+  actor: AuthorizationActor,
+  permission: Permission,
+): AccessScope {
+  return authorizationMatrix[actor.role][permission];
+}
+
 export function can(
   actor: AuthorizationActor,
   permission: Permission,
   context: AccessContext = {},
 ) {
-  const scope = authorizationMatrix[actor.role][permission];
+  const scope = authorizationScope(actor, permission);
 
   if (scope === "all") {
     return true;
