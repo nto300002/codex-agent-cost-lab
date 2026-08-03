@@ -33,6 +33,7 @@ pnpm test:auth
 
 - 種別: feature
 - 依存: ISSUE-006
+- 状態: 実装済み
 - 目的: MEMBER、MANAGER、ADMINの認可を一箇所で判定する。
 
 ### スコープ
