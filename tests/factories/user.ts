@@ -1,6 +1,6 @@
 import { Prisma, UserRole } from "../../generated/prisma/client";
 
-const defaultDate = new Date("2026-01-01T00:00:00.000Z");
+const defaultDate = "2026-01-01T00:00:00.000Z";
 
 export function buildUser(
   overrides: Partial<Prisma.UserCreateInput> = {},
@@ -12,8 +12,8 @@ export function buildUser(
     passwordHash: "test-password-hash",
     role: UserRole.MEMBER,
     active: true,
-    createdAt: defaultDate,
-    updatedAt: defaultDate,
+    createdAt: new Date(defaultDate),
+    updatedAt: new Date(defaultDate),
     ...overrides,
   };
 }
