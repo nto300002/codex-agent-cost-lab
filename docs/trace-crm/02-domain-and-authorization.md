@@ -155,6 +155,22 @@ Cookieには `crypto.randomBytes(32)` で生成した生トークンを保存し
 - Userの有効・無効、ロール変更ができる
 - AuditLogを閲覧できる
 
+#### 認可マトリクス
+
+| リソース | 操作 | MEMBER | MANAGER | ADMIN |
+|---|---|---|---|---|
+| Customer | 閲覧・作成・更新 | 担当範囲 | 全件 | 全件 |
+| Customer | 削除 | 不可 | 不可 | 全件 |
+| Customer | CSV出力 | 不可 | 全件 | 全件 |
+| Deal | 閲覧・作成・更新 | 担当範囲 | 全件 | 全件 |
+| Deal | 削除・CSV出力 | 不可 | 全件 | 全件 |
+| Activity | 閲覧・作成・更新・削除 | 親Customerの担当範囲 | 全件 | 全件 |
+| User | 閲覧 | 不可 | 全件 | 全件 |
+| User | 作成・更新・無効化・ロール変更 | 不可 | 不可 | 全件 |
+| AuditLog | 閲覧 | 不可 | 不可 | 全件 |
+
+`担当範囲` は、認証ユーザーIDと対象の `ownerId` が一致する場合とする。CustomerやDealを作成する場合は保存予定の `ownerId`、Activityは親Customerの `ownerId` を判定に使用する。
+
 ### 8.4 認可の実装
 
 - API単位で認可する
