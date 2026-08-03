@@ -4,20 +4,36 @@ import type {
   CustomerRepository,
 } from "../application/customer-repository";
 import type {
+  Customer,
   CustomerCreateData,
   CustomerUpdateData,
 } from "../domain/customer";
 
 type DatabaseClient = PrismaClient | Prisma.TransactionClient;
+const customerRelations = {
+  owner: { select: { id: true, name: true } },
+  tags: {
+    select: { tag: { select: { id: true, name: true } } },
+    orderBy: { tag: { name: "asc" } },
+  },
+} as const;
+type CustomerRecord = Prisma.CustomerGetPayload<{
+  include: typeof customerRelations;
+}>;
+
+function toCustomer({ tags, ...customer }: CustomerRecord): Customer {
+  return { ...customer, tags: tags.map(({ tag }) => tag) };
+}
 
 export class PrismaCustomerRepository implements CustomerRepository<Prisma.TransactionClient> {
   constructor(private readonly prisma: PrismaClient) {}
 
   async list(criteria: CustomerListCriteria) {
     const where = this.listWhere(criteria);
-    const [customers, total] = await Promise.all([
+    const [records, total] = await Promise.all([
       this.prisma.customer.findMany({
         where,
+        include: customerRelations,
         orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
         skip: (criteria.page - 1) * criteria.pageSize,
         take: criteria.pageSize,
@@ -25,11 +41,15 @@ export class PrismaCustomerRepository implements CustomerRepository<Prisma.Trans
       this.prisma.customer.count({ where }),
     ]);
 
-    return { customers, total };
+    return { customers: records.map(toCustomer), total };
   }
 
-  findById(id: string, transaction?: Prisma.TransactionClient) {
-    return this.database(transaction).customer.findUnique({ where: { id } });
+  async findById(id: string, transaction?: Prisma.TransactionClient) {
+    const record = await this.database(transaction).customer.findUnique({
+      where: { id },
+      include: customerRelations,
+    });
+    return record === null ? null : toCustomer(record);
   }
 
   async activeOwnerExists(ownerId: string) {
@@ -38,6 +58,17 @@ export class PrismaCustomerRepository implements CustomerRepository<Prisma.Trans
         where: { id: ownerId, active: true },
       })) === 1
     );
+  }
+
+  listActiveOwners(ownerId?: string) {
+    return this.prisma.user.findMany({
+      where: {
+        active: true,
+        ...(ownerId === undefined ? {} : { id: ownerId }),
+      },
+      orderBy: [{ name: "asc" }, { id: "asc" }],
+      select: { id: true, name: true },
+    });
   }
 
   create(data: CustomerCreateData) {

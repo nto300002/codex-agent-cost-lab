@@ -1,6 +1,7 @@
 import type {
   Customer,
   CustomerCreateData,
+  CustomerOwner,
   CustomerSearch,
   CustomerUpdateData,
 } from "../domain/customer";
@@ -22,6 +23,7 @@ export interface CustomerRepository<TTransaction = unknown> {
   }>;
   findById(id: string, transaction?: TTransaction): Promise<Customer | null>;
   activeOwnerExists(ownerId: string): Promise<boolean>;
+  listActiveOwners(ownerId?: string): Promise<CustomerOwner[]>;
   create(data: CustomerCreateData): Promise<Customer>;
   update(id: string, data: CustomerUpdateData): Promise<Customer>;
   countRelations(

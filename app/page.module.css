@@ -1,8 +1,6 @@
 .main {
   display: grid;
-  min-height: 100vh;
   place-items: center;
-  padding: 48px 24px;
 }
 
 .hero {
@@ -62,4 +60,20 @@
   margin: 0;
   overflow-wrap: anywhere;
   font-weight: 700;
+}
+
+.customerLink {
+  display: inline-block;
+  margin-top: 32px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.customerLink:focus-visible {
+  outline: 3px solid rgb(49 87 213 / 25%);
+  outline-offset: 3px;
 }

@@ -1,0 +1,77 @@
+.shell {
+  min-height: 100vh;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 32px;
+  align-items: center;
+  min-height: 72px;
+  padding: 12px clamp(20px, 5vw, 64px);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.brand {
+  color: var(--foreground);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+.header nav a {
+  color: var(--muted);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.header nav a:hover,
+.header nav a:focus-visible {
+  color: var(--accent);
+}
+
+.account {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.account span {
+  display: grid;
+  text-align: right;
+}
+
+.account small {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.main {
+  width: min(100% - 40px, 1180px);
+  margin: 0 auto;
+  padding: 48px 0 80px;
+}
+
+@media (max-width: 680px) {
+  .header {
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+
+  .header nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .account span {
+    display: none;
+  }
+
+  .main {
+    width: min(100% - 24px, 1180px);
+    padding-top: 28px;
+  }
+}
