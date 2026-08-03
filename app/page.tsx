@@ -1,6 +1,10 @@
 import styles from "./page.module.css";
+import { LogoutButton } from "../src/features/auth/presentation/logout-button";
+import { requireSessionUser } from "../src/features/auth/presentation/session-user";
 
-export default function Home() {
+export default async function Home() {
+  const user = await requireSessionUser();
+
   return (
     <main className={styles.main}>
       <section className={styles.hero}>
@@ -9,7 +13,21 @@ export default function Home() {
         <p className={styles.description}>
           プロンプトの情報量とAIエージェントの実装コストを比較するための、再現可能なCRMアプリケーションです。
         </p>
-        <p className={styles.status}>プロジェクト基盤を初期化しました。</p>
+        <dl className={styles.userDetails}>
+          <div>
+            <dt>ユーザー</dt>
+            <dd>{user.name}</dd>
+          </div>
+          <div>
+            <dt>メール</dt>
+            <dd>{user.email}</dd>
+          </div>
+          <div>
+            <dt>ロール</dt>
+            <dd>{user.role}</dd>
+          </div>
+        </dl>
+        <LogoutButton />
       </section>
     </main>
   );
