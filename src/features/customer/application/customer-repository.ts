@@ -21,6 +21,9 @@ export interface CustomerRepository<TTransaction = unknown> {
     customers: Customer[];
     total: number;
   }>;
+  listForExport(
+    criteria: Omit<CustomerListCriteria, "page" | "pageSize">,
+  ): Promise<Customer[]>;
   findById(id: string, transaction?: TTransaction): Promise<Customer | null>;
   activeOwnerExists(ownerId: string): Promise<boolean>;
   listActiveOwners(ownerId?: string): Promise<CustomerOwner[]>;

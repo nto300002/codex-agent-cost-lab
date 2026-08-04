@@ -13,7 +13,7 @@ export default async function DealsPage() {
         <span>顧客に紐づく商談と進捗を管理します。</span>
       </header>
       <Suspense fallback={<p>商談を読み込んでいます…</p>}>
-        <DealList />
+        <DealList user={user} />
       </Suspense>
     </AppShell>
   );

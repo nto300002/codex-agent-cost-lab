@@ -70,3 +70,8 @@ export const dealSearchSchema = z
     pageSize: z.coerce.number().int().min(1).max(100).default(20),
   })
   .strict();
+
+export const dealExportSearchSchema = dealSearchSchema.omit({
+  page: true,
+  pageSize: true,
+});

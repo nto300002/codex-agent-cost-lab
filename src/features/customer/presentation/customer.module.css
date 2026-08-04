@@ -74,6 +74,12 @@
   white-space: nowrap;
 }
 
+.toolbarActions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
 .clearLink,
 .secondaryLink {
   display: inline-flex;

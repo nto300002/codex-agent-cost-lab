@@ -5,11 +5,16 @@ import type {
   DealUpdateData,
 } from "../domain/deal";
 
+export type DealListCriteria = DealSearch & { restrictedOwnerId?: string };
+
 export interface DealRepository {
-  list(criteria: DealSearch & { restrictedOwnerId?: string }): Promise<{
+  list(criteria: DealListCriteria): Promise<{
     deals: Deal[];
     total: number;
   }>;
+  listForExport(
+    criteria: Omit<DealListCriteria, "page" | "pageSize">,
+  ): Promise<Deal[]>;
   findById(id: string): Promise<Deal | null>;
   activeOwnerExists(ownerId: string): Promise<boolean>;
   findCustomerOwnerId(customerId: string): Promise<string | null>;

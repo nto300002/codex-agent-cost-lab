@@ -44,6 +44,17 @@ export class PrismaCustomerRepository implements CustomerRepository<Prisma.Trans
     return { customers: records.map(toCustomer), total };
   }
 
+  async listForExport(
+    criteria: Omit<CustomerListCriteria, "page" | "pageSize">,
+  ) {
+    const records = await this.prisma.customer.findMany({
+      where: this.listWhere(criteria),
+      include: customerRelations,
+      orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
+    });
+    return records.map(toCustomer);
+  }
+
   async findById(id: string, transaction?: Prisma.TransactionClient) {
     const record = await this.database(transaction).customer.findUnique({
       where: { id },
@@ -141,7 +152,9 @@ export class PrismaCustomerRepository implements CustomerRepository<Prisma.Trans
     return transaction ?? this.prisma;
   }
 
-  private listWhere(criteria: CustomerListCriteria): Prisma.CustomerWhereInput {
+  private listWhere(
+    criteria: Omit<CustomerListCriteria, "page" | "pageSize">,
+  ): Prisma.CustomerWhereInput {
     return {
       ...(criteria.name === undefined
         ? {}
