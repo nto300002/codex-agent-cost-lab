@@ -21,11 +21,10 @@ for (const user of seedUsers) {
     await page.getByRole("button", { name: "ログイン" }).click();
 
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole("heading", { name: "TraceCRM" })).toBeVisible();
-    await expect(page.getByText(user.email)).toBeVisible();
     await expect(
-      page.getByRole("main").getByText(user.role, { exact: true }),
+      page.getByRole("heading", { name: "CRMダッシュボード" }),
     ).toBeVisible();
+    await expect(page.getByText(user.role, { exact: true })).toBeVisible();
 
     await page.getByRole("button", { name: "ログアウト" }).click();
     await expect(page).toHaveURL(/\/login$/);

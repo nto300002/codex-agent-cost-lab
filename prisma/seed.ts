@@ -1,4 +1,5 @@
 import { scryptSync } from "node:crypto";
+import { pathToFileURL } from "node:url";
 
 import {
   ActivityType,
@@ -269,8 +270,10 @@ const auditLogs: Prisma.AuditLogCreateManyInput[] = Array.from(
   },
 );
 
-async function seed() {
-  await prisma.$transaction(async (transaction) => {
+export async function seedDatabase(
+  target: ReturnType<typeof createPrismaClient>,
+) {
+  await target.$transaction(async (transaction) => {
     await transaction.auditLog.deleteMany();
     await transaction.customerTag.deleteMany();
     await transaction.activity.deleteMany();
@@ -287,18 +290,26 @@ async function seed() {
     await transaction.customerTag.createMany({ data: customerTags });
     await transaction.auditLog.createMany({ data: auditLogs });
   });
+}
 
+async function seed() {
+  await seedDatabase(prisma);
   console.log(
     `Seeded ${users.length} users, ${customers.length} customers, ${deals.length} deals, ` +
       `${activities.length} activities, ${tags.length} tags, and ${auditLogs.length} audit logs.`,
   );
 }
 
-seed()
-  .catch((error: unknown) => {
-    console.error(error);
-    process.exitCode = 1;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+  seed()
+    .catch((error: unknown) => {
+      console.error(error);
+      process.exitCode = 1;
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

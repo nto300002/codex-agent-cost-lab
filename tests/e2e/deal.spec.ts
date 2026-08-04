@@ -16,7 +16,9 @@ test("shows Customer deals and rejects an out-of-scope update", async ({
 }) => {
   await login(page);
   await page.goto(`/customers/${customer1}`);
-  await expect(page.getByRole("link", { name: "商談 01" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "商談 01", exact: true }),
+  ).toBeVisible();
   await page.goto(`/deals/${deal1}`);
   await expect(page.getByRole("link", { name: "商談を編集" })).toBeVisible();
   const response = await page.request.patch(`/api/deals/${deal3}`, {

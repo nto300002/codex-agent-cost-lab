@@ -19,6 +19,7 @@ export function AppShell({
           TraceCRM
         </Link>
         <nav aria-label="メインナビゲーション">
+          <Link href="/dashboard">概要</Link>
           <Link href="/customers">顧客</Link>
           <Link href="/deals">商談</Link>
         </nav>
