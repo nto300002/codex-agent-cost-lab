@@ -60,6 +60,7 @@ pnpm test:activity
 
 - 種別: feature
 - 依存: ISSUE-009、ISSUE-010、ISSUE-011
+- 状態: 実装済み
 - 目的: ロールと担当範囲に応じたCRM概要を表示する。
 
 ### スコープ
