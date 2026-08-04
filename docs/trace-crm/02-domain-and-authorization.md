@@ -146,7 +146,7 @@ Cookieには `crypto.randomBytes(32)` で生成した生トークンを保存し
 - 全Customer・Deal・Activityを閲覧できる
 - 全Customer・Dealを更新できる
 - CSV出力を利用できる
-- Userの一覧を閲覧できる
+- User管理は利用できない
 - Userのロール変更はできない
 
 #### ADMIN
@@ -165,7 +165,7 @@ Cookieには `crypto.randomBytes(32)` で生成した生トークンを保存し
 | Deal | 閲覧・作成・更新 | 担当範囲 | 全件 | 全件 |
 | Deal | 削除・CSV出力 | 不可 | 全件 | 全件 |
 | Activity | 閲覧・作成・更新・削除 | 親Customerの担当範囲 | 全件 | 全件 |
-| User | 閲覧 | 不可 | 全件 | 全件 |
+| User | 閲覧 | 不可 | 不可 | 全件 |
 | User | 作成・更新・無効化・ロール変更 | 不可 | 不可 | 全件 |
 | AuditLog | 閲覧 | 不可 | 不可 | 全件 |
 

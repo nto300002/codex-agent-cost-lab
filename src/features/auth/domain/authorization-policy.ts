@@ -68,7 +68,7 @@ export const authorizationMatrix = {
     "activity:create": "all",
     "activity:update": "all",
     "activity:delete": "all",
-    "user:read": "all",
+    "user:read": "none",
     "user:create": "none",
     "user:update": "none",
     "user:disable": "none",
