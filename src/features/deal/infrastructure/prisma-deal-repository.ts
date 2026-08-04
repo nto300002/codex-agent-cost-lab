@@ -1,11 +1,9 @@
 import type { Prisma, PrismaClient } from "../../../../generated/prisma/client";
-import type { DealRepository } from "../application/deal-repository";
 import type {
-  Deal,
-  DealCreateData,
-  DealSearch,
-  DealUpdateData,
-} from "../domain/deal";
+  DealListCriteria,
+  DealRepository,
+} from "../application/deal-repository";
+import type { Deal, DealCreateData, DealUpdateData } from "../domain/deal";
 
 const relations = {
   customer: { select: { id: true, name: true, ownerId: true } },
@@ -19,25 +17,8 @@ function toDeal(record: DealRecord): Deal {
 export class PrismaDealRepository implements DealRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async list(criteria: DealSearch & { restrictedOwnerId?: string }) {
-    const where: Prisma.DealWhereInput = {
-      ...(criteria.customerId ? { customerId: criteria.customerId } : {}),
-      ...(criteria.stage ? { stage: criteria.stage } : {}),
-      AND: [
-        ...(criteria.ownerId ? [{ ownerId: criteria.ownerId }] : []),
-        ...(criteria.restrictedOwnerId
-          ? [{ ownerId: criteria.restrictedOwnerId }]
-          : []),
-      ],
-      ...(!criteria.expectedFrom && !criteria.expectedTo
-        ? {}
-        : {
-            expectedCloseDate: {
-              ...(criteria.expectedFrom ? { gte: criteria.expectedFrom } : {}),
-              ...(criteria.expectedTo ? { lte: criteria.expectedTo } : {}),
-            },
-          }),
-    };
+  async list(criteria: DealListCriteria) {
+    const where = this.listWhere(criteria);
     const [records, total] = await Promise.all([
       this.prisma.deal.findMany({
         where,
@@ -49,6 +30,15 @@ export class PrismaDealRepository implements DealRepository {
       this.prisma.deal.count({ where }),
     ]);
     return { deals: records.map(toDeal), total };
+  }
+
+  async listForExport(criteria: Omit<DealListCriteria, "page" | "pageSize">) {
+    const records = await this.prisma.deal.findMany({
+      where: this.listWhere(criteria),
+      include: relations,
+      orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
+    });
+    return records.map(toDeal);
   }
 
   async findById(id: string) {
@@ -77,5 +67,28 @@ export class PrismaDealRepository implements DealRepository {
   }
   update(id: string, data: DealUpdateData) {
     return this.prisma.deal.update({ where: { id }, data, include: relations });
+  }
+
+  private listWhere(
+    criteria: Omit<DealListCriteria, "page" | "pageSize">,
+  ): Prisma.DealWhereInput {
+    return {
+      ...(criteria.customerId ? { customerId: criteria.customerId } : {}),
+      ...(criteria.stage ? { stage: criteria.stage } : {}),
+      AND: [
+        ...(criteria.ownerId ? [{ ownerId: criteria.ownerId }] : []),
+        ...(criteria.restrictedOwnerId
+          ? [{ ownerId: criteria.restrictedOwnerId }]
+          : []),
+      ],
+      ...(!criteria.expectedFrom && !criteria.expectedTo
+        ? {}
+        : {
+            expectedCloseDate: {
+              ...(criteria.expectedFrom ? { gte: criteria.expectedFrom } : {}),
+              ...(criteria.expectedTo ? { lte: criteria.expectedTo } : {}),
+            },
+          }),
+    };
   }
 }

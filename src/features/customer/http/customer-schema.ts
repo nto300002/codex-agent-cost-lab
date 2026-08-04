@@ -98,3 +98,8 @@ export const customerSearchSchema = z
     pageSize: z.coerce.number().int().min(1).max(100).default(20),
   })
   .strict();
+
+export const customerExportSearchSchema = customerSearchSchema.omit({
+  page: true,
+  pageSize: true,
+});

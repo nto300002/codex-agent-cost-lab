@@ -33,6 +33,7 @@ const deal = {
 function setup() {
   const repository = {
     list: vi.fn().mockResolvedValue({ deals: [], total: 0 }),
+    listForExport: vi.fn().mockResolvedValue([]),
     findById: vi.fn().mockResolvedValue(deal),
     activeOwnerExists: vi.fn().mockResolvedValue(true),
     findCustomerOwnerId: vi.fn().mockResolvedValue(member.id),

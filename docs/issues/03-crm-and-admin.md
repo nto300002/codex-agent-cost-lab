@@ -108,6 +108,8 @@ pnpm test:activity
 
 ## ISSUE-014: Customer・DealのCSV出力を実装する
 
+> 実装済み: Customer・Dealの一覧と同じ絞り込みを再利用し、MANAGER・ADMINのみがUTF-8 CSVを出力できる。値の引用符・改行・カンマのエスケープ、formula injection対策、出力AuditLog記録を実装した。
+
 - 種別: feature
 - 依存: ISSUE-009、ISSUE-010
 - 目的: 認可済みの一覧条件をCSVとしてローカル生成する。

@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import type { AuthenticatedUser } from "../../auth/domain/auth-user";
+import { can } from "../../auth/domain/authorization-policy";
 import type { CustomerOwner } from "../../customer/domain/customer";
 import type { CustomerView } from "../../customer/presentation/customer-api";
 import { dealStageLabels, dealStages } from "../domain/deal";
@@ -17,7 +19,7 @@ type PageData = {
     totalPages: number;
   };
 };
-export function DealList() {
+export function DealList({ user }: { user: AuthenticatedUser }) {
   const params = useSearchParams();
   const query = params.toString();
   const [data, setData] = useState<PageData | null>(null);
@@ -57,6 +59,13 @@ export function DealList() {
     const next = new URLSearchParams(params.toString());
     next.set("page", String(page));
     return `/deals?${next}`;
+  };
+  const exportHref = () => {
+    const next = new URLSearchParams(params.toString());
+    next.delete("page");
+    next.delete("pageSize");
+    const exportQuery = next.toString();
+    return `/api/exports/deals.csv${exportQuery ? `?${exportQuery}` : ""}`;
   };
   return (
     <>
@@ -108,9 +117,16 @@ export function DealList() {
             クリア
           </Link>
         </form>
-        <Link className={styles.primary} href="/deals/new">
-          商談を登録
-        </Link>
+        <div className={styles.toolbarActions}>
+          {can(user, "deal:export") ? (
+            <a className={styles.secondary} href={exportHref()} download>
+              CSV出力
+            </a>
+          ) : null}
+          <Link className={styles.primary} href="/deals/new">
+            商談を登録
+          </Link>
+        </div>
       </section>
       {error ? (
         <p className={styles.error} role="alert">

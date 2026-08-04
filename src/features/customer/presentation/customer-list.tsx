@@ -76,6 +76,14 @@ export function CustomerList({ user }: { user: AuthenticatedUser }) {
     return `/customers?${parameters.toString()}`;
   }
 
+  function exportHref() {
+    const parameters = new URLSearchParams(searchParams.toString());
+    parameters.delete("page");
+    parameters.delete("pageSize");
+    const exportQuery = parameters.toString();
+    return `/api/exports/customers.csv${exportQuery ? `?${exportQuery}` : ""}`;
+  }
+
   return (
     <>
       <section className={styles.toolbar} aria-label="顧客の検索と絞り込み">
@@ -121,11 +129,18 @@ export function CustomerList({ user }: { user: AuthenticatedUser }) {
             条件をクリア
           </Link>
         </form>
-        {can(user, "customer:create", { ownerId: user.id }) ? (
-          <Link className={styles.primaryLink} href="/customers/new">
-            顧客を登録
-          </Link>
-        ) : null}
+        <div className={styles.toolbarActions}>
+          {can(user, "customer:export") ? (
+            <a className={styles.secondaryLink} href={exportHref()} download>
+              CSV出力
+            </a>
+          ) : null}
+          {can(user, "customer:create", { ownerId: user.id }) ? (
+            <Link className={styles.primaryLink} href="/customers/new">
+              顧客を登録
+            </Link>
+          ) : null}
+        </div>
       </section>
 
       {error ? (

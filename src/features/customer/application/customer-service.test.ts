@@ -36,6 +36,7 @@ function dependencies() {
   const events: string[] = [];
   const repository = {
     list: vi.fn().mockResolvedValue({ customers: [customer], total: 1 }),
+    listForExport: vi.fn().mockResolvedValue([customer]),
     findById: vi.fn().mockResolvedValue(customer),
     activeOwnerExists: vi.fn().mockResolvedValue(true),
     listActiveOwners: vi

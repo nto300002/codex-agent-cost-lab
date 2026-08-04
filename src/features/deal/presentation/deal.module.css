@@ -84,6 +84,11 @@
   font-weight: 700;
   text-decoration: none;
 }
+.toolbarActions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
 .table {
   width: 100%;
   table-layout: fixed;
