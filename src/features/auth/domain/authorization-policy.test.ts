@@ -127,7 +127,7 @@ const matrixCases: MatrixCase[] = [
     permission: "user:read",
     memberOwn: false,
     memberOther: false,
-    manager: true,
+    manager: false,
     admin: true,
   },
   {

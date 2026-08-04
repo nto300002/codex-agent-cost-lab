@@ -85,6 +85,7 @@ pnpm test:activity
 
 - 種別: feature
 - 依存: ISSUE-007
+- 状態: 実装済み
 - 目的: ADMINがローカルユーザーとロールを管理できるようにする。
 
 ### スコープ
