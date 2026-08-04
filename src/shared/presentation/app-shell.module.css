@@ -27,6 +27,11 @@
   text-decoration: none;
 }
 
+.header nav {
+  display: flex;
+  gap: 20px;
+}
+
 .header nav a:hover,
 .header nav a:focus-visible {
   color: var(--accent);

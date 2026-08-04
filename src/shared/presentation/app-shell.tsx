@@ -20,6 +20,7 @@ export function AppShell({
         </Link>
         <nav aria-label="メインナビゲーション">
           <Link href="/customers">顧客</Link>
+          <Link href="/deals">商談</Link>
         </nav>
         <div className={styles.account}>
           <span>
