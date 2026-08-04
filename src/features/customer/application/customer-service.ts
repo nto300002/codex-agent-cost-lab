@@ -4,6 +4,7 @@ import {
   ValidationError,
 } from "../../../shared/errors/app-error";
 import type { AuthenticatedUser } from "../../auth/domain/auth-user";
+import type { AuditRecorder } from "../../audit/application/audit-log-repository";
 import {
   authorizationScope,
   authorize,
@@ -21,6 +22,7 @@ export class CustomerService<TTransaction> {
   constructor(
     private readonly repository: CustomerRepository<TTransaction>,
     private readonly transactionManager: TransactionManager<TTransaction>,
+    private readonly audit: AuditRecorder<TTransaction>,
   ) {}
 
   async list(actor: AuthenticatedUser, search: CustomerSearch) {
@@ -93,8 +95,19 @@ export class CustomerService<TTransaction> {
       await this.repository.deleteActivities(id, transaction);
       await this.repository.deleteDeals(id, transaction);
       await this.repository.deleteCustomer(id, transaction);
-      await this.repository.recordDeleteAudit(
-        { actorUserId: actor.id, customer, relationCounts },
+      await this.audit.record(
+        {
+          actorUserId: actor.id,
+          action: "DELETE",
+          entityType: "Customer",
+          entityId: customer.id,
+          before: {
+            id: customer.id,
+            status: customer.status,
+            ownerId: customer.ownerId,
+            relationCounts,
+          },
+        },
         transaction,
       );
     });

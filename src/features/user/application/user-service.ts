@@ -2,6 +2,7 @@ import type { TransactionManager } from "../../../shared/database/transaction-ma
 import { ConflictError, NotFoundError } from "../../../shared/errors/app-error";
 import type { AuthenticatedUser } from "../../auth/domain/auth-user";
 import { authorize } from "../../auth/domain/authorization-policy";
+import type { AuditRecorder } from "../../audit/application/audit-log-repository";
 import { hashPassword } from "../../auth/domain/password";
 import type {
   CreateUserInput,
@@ -18,6 +19,7 @@ export class UserService<TTransaction> {
   constructor(
     private readonly repository: UserRepository<TTransaction>,
     private readonly transactionManager: TransactionManager<TTransaction>,
+    private readonly audit: AuditRecorder<TTransaction>,
   ) {}
 
   list(actor: AuthenticatedUser) {
@@ -37,8 +39,14 @@ export class UserService<TTransaction> {
         { ...profile, passwordHash, active: true },
         transaction,
       );
-      await this.repository.recordAudit(
-        { actorUserId: actor.id, action: "CREATE", after: user },
+      await this.audit.record(
+        {
+          actorUserId: actor.id,
+          action: "CREATE",
+          entityType: "User",
+          entityId: user.id,
+          after: this.auditSnapshot(user),
+        },
         transaction,
       );
       return user;
@@ -96,8 +104,15 @@ export class UserService<TTransaction> {
           : input.role !== undefined && input.role !== current.role
             ? "ROLE_CHANGE"
             : "UPDATE";
-      await this.repository.recordAudit(
-        { actorUserId: actor.id, action, before: current, after: updated },
+      await this.audit.record(
+        {
+          actorUserId: actor.id,
+          action,
+          entityType: "User",
+          entityId: updated.id,
+          before: this.auditSnapshot(current),
+          after: this.auditSnapshot(updated),
+        },
         transaction,
       );
       return updated;
@@ -118,5 +133,9 @@ export class UserService<TTransaction> {
     if (await this.repository.emailExists(email, excludedUserId, transaction)) {
       throw new ConflictError(duplicateEmailMessage);
     }
+  }
+
+  private auditSnapshot(user: { id: string; role: string; active: boolean }) {
+    return { id: user.id, role: user.role, active: user.active };
   }
 }

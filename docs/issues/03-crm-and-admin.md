@@ -135,6 +135,8 @@ pnpm test:activity
 
 ## ISSUE-015: AuditLog基盤と管理画面を実装する
 
+> 実装済み: 機密キー除外とサイズ上限を持つ共通AuditLog記録サービスを導入し、ログイン・ログアウト、User管理、CSV出力、Customer削除の記録を統合した。ADMIN専用の一覧・詳細・絞り込み画面を実装した。
+
 - 種別: feature
 - 依存: ISSUE-007、ISSUE-013
 - 目的: 主要操作を追跡し、ADMINが閲覧できる基盤を作る。

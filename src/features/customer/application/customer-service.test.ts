@@ -60,9 +60,6 @@ function dependencies() {
     deleteCustomer: vi.fn().mockImplementation(async () => {
       events.push("customer");
     }),
-    recordDeleteAudit: vi.fn().mockImplementation(async () => {
-      events.push("audit");
-    }),
   } satisfies CustomerRepository<string>;
   const transactionManager: TransactionManager<string> = {
     async run(operation) {
@@ -73,10 +70,17 @@ function dependencies() {
     },
   };
 
+  const audit = {
+    record: vi.fn().mockImplementation(async () => {
+      events.push("audit");
+    }),
+  };
+
   return {
     events,
     repository,
-    service: new CustomerService(repository, transactionManager),
+    audit,
+    service: new CustomerService(repository, transactionManager, audit),
   };
 }
 
@@ -135,7 +139,7 @@ describe("CustomerService", () => {
   });
 
   it("deletes related records and records the audit inside one transaction", async () => {
-    const { events, repository, service } = dependencies();
+    const { audit, events, service } = dependencies();
 
     await service.delete(admin, customer.id);
 
@@ -149,11 +153,18 @@ describe("CustomerService", () => {
       "audit",
       "transaction:end",
     ]);
-    expect(repository.recordDeleteAudit).toHaveBeenCalledWith(
+    expect(audit.record).toHaveBeenCalledWith(
       {
         actorUserId: admin.id,
-        customer,
-        relationCounts: { customerTags: 2, activities: 3, deals: 1 },
+        action: "DELETE",
+        entityType: "Customer",
+        entityId: customer.id,
+        before: {
+          id: customer.id,
+          status: customer.status,
+          ownerId: customer.ownerId,
+          relationCounts: { customerTags: 2, activities: 3, deals: 1 },
+        },
       },
       "transaction",
     );

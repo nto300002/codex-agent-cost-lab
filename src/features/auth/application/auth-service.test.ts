@@ -21,7 +21,7 @@ class InMemoryAuthRepository implements AuthRepository {
     return this.user?.email === email ? this.user : null;
   }
 
-  async createSession(input: {
+  async createSessionWithLoginAudit(input: {
     tokenHash: string;
     userId: string;
     expiresAt: Date;
@@ -42,6 +42,10 @@ class InMemoryAuthRepository implements AuthRepository {
   }
 
   async deleteSessionByTokenHash(tokenHash: string) {
+    this.sessions.delete(tokenHash);
+  }
+
+  async deleteSessionWithLogoutAudit(tokenHash: string) {
     this.sessions.delete(tokenHash);
   }
 

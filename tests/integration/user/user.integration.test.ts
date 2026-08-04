@@ -1,7 +1,9 @@
 import { NextRequest } from "next/server";
-import { UserRole } from "../../../generated/prisma/client";
+import { UserRole, type PrismaClient } from "../../../generated/prisma/client";
 import { describe, expect, it } from "vitest";
 import type { AuthenticatedUser } from "../../../src/features/auth/domain/auth-user";
+import { AuditLogService } from "../../../src/features/audit/application/audit-log-service";
+import { PrismaAuditLogRepository } from "../../../src/features/audit/infrastructure/prisma-audit-log-repository";
 import { UserService } from "../../../src/features/user/application/user-service";
 import {
   createUserCollectionHandlers,
@@ -47,6 +49,10 @@ function request(url: string, method = "GET", body?: unknown) {
   });
 }
 
+function audit(prisma: PrismaClient) {
+  return new AuditLogService(new PrismaAuditLogRepository(prisma));
+}
+
 describe("user management integration", () => {
   it.each([manager, member])(
     "returns 403 from every user management API for $role",
@@ -59,6 +65,7 @@ describe("user management integration", () => {
         const service = new UserService(
           new PrismaUserRepository(database.prisma),
           new PrismaTransactionManager(database.prisma),
+          audit(database.prisma),
         );
         const collection = createUserCollectionHandlers(service, auth(actor));
         const item = createUserItemHandlers(service, auth(actor));
@@ -95,6 +102,7 @@ describe("user management integration", () => {
       const service = new UserService(
         new PrismaUserRepository(database.prisma),
         new PrismaTransactionManager(database.prisma),
+        audit(database.prisma),
       );
       const collection = createUserCollectionHandlers(service, auth(admin));
       const item = createUserItemHandlers(service, auth(admin));
@@ -172,6 +180,7 @@ describe("user management integration", () => {
       const service = new UserService(
         new PrismaUserRepository(database.prisma),
         new PrismaTransactionManager(database.prisma),
+        audit(database.prisma),
       );
 
       await expect(

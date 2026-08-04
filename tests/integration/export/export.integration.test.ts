@@ -6,11 +6,12 @@ import type { AuthenticatedUser } from "../../../src/features/auth/domain/auth-u
 import { PrismaCustomerRepository } from "../../../src/features/customer/infrastructure/prisma-customer-repository";
 import { PrismaDealRepository } from "../../../src/features/deal/infrastructure/prisma-deal-repository";
 import { ExportService } from "../../../src/features/export/application/export-service";
+import { AuditLogService } from "../../../src/features/audit/application/audit-log-service";
+import { PrismaAuditLogRepository } from "../../../src/features/audit/infrastructure/prisma-audit-log-repository";
 import {
   createCustomerExportHandler,
   createDealExportHandler,
 } from "../../../src/features/export/http/export-handlers";
-import { PrismaExportAuditRepository } from "../../../src/features/export/infrastructure/prisma-export-audit-repository";
 import { buildUser } from "../../factories/user";
 import { createTestDatabase } from "../../helpers/test-database";
 
@@ -94,7 +95,7 @@ describe("CSV export integration", () => {
       const service = new ExportService(
         new PrismaCustomerRepository(database.prisma),
         new PrismaDealRepository(database.prisma),
-        new PrismaExportAuditRepository(database.prisma),
+        new AuditLogService(new PrismaAuditLogRepository(database.prisma)),
       );
       const customerResponse = await createCustomerExportHandler(
         service,
@@ -135,8 +136,8 @@ describe("CSV export integration", () => {
       expect(
         audits.map(({ afterJson }) => JSON.parse(afterJson ?? "{}")),
       ).toEqual([
-        { filters: { status: "ACTIVE" }, rowCount: 1 },
-        { filters: { stage: "PROPOSAL" }, rowCount: 1 },
+        { filterKeys: ["status"], rowCount: 1 },
+        { filterKeys: ["stage"], rowCount: 1 },
       ]);
     } finally {
       await database.cleanup();
@@ -152,7 +153,7 @@ describe("CSV export integration", () => {
       const service = new ExportService(
         new PrismaCustomerRepository(database.prisma),
         new PrismaDealRepository(database.prisma),
-        new PrismaExportAuditRepository(database.prisma),
+        new AuditLogService(new PrismaAuditLogRepository(database.prisma)),
       );
 
       const [adminCustomers, adminDeals, memberCustomers, memberDeals] =

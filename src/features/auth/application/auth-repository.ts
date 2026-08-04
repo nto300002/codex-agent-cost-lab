@@ -8,7 +8,7 @@ export type StoredSession = {
 
 export interface AuthRepository {
   findUserByEmail(email: string): Promise<AuthUserRecord | null>;
-  createSession(input: {
+  createSessionWithLoginAudit(input: {
     tokenHash: string;
     userId: string;
     expiresAt: Date;
@@ -16,5 +16,6 @@ export interface AuthRepository {
   }): Promise<void>;
   findSessionByTokenHash(tokenHash: string): Promise<StoredSession | null>;
   deleteSessionByTokenHash(tokenHash: string): Promise<void>;
+  deleteSessionWithLogoutAudit(tokenHash: string): Promise<void>;
   deleteSessionsByUserId(userId: string): Promise<void>;
 }

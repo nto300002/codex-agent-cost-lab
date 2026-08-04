@@ -3,8 +3,8 @@ import { UserRole } from "../../../generated/prisma/client";
 import { describe, expect, it } from "vitest";
 
 import { CustomerService } from "../../../src/features/customer/application/customer-service";
-import type { CustomerRelationCounts } from "../../../src/features/customer/application/customer-repository";
-import type { Customer } from "../../../src/features/customer/domain/customer";
+import { AuditLogService } from "../../../src/features/audit/application/audit-log-service";
+import { PrismaAuditLogRepository } from "../../../src/features/audit/infrastructure/prisma-audit-log-repository";
 import { PrismaCustomerRepository } from "../../../src/features/customer/infrastructure/prisma-customer-repository";
 import { PrismaTransactionManager } from "../../../src/infrastructure/database/prisma-transaction-manager";
 import { buildUser } from "../../factories/user";
@@ -78,20 +78,11 @@ async function seedCustomerGraph(
   return customerId;
 }
 
-class FailingAuditCustomerRepository extends PrismaCustomerRepository {
-  override async recordDeleteAudit(
-    _input: {
-      actorUserId: string;
-      customer: Customer;
-      relationCounts: CustomerRelationCounts;
-    },
-    _transaction: Prisma.TransactionClient,
-  ): Promise<void> {
-    void _input;
-    void _transaction;
+const failingAudit = {
+  async record() {
     throw new Error("audit failed");
-  }
-}
+  },
+};
 
 describe("customer integration", () => {
   it("combines every search filter and applies stable pagination order", async () => {
@@ -166,6 +157,7 @@ describe("customer integration", () => {
       const service = new CustomerService(
         new PrismaCustomerRepository(database.prisma),
         new PrismaTransactionManager(database.prisma),
+        new AuditLogService(new PrismaAuditLogRepository(database.prisma)),
       );
 
       await service.delete(admin, customerId);
@@ -192,7 +184,7 @@ describe("customer integration", () => {
         action: "DELETE",
       });
       expect(JSON.parse(audit?.beforeJson ?? "{}")).toMatchObject({
-        customer: { id: customerId },
+        id: customerId,
         relationCounts: { customerTags: 1, activities: 1, deals: 1 },
       });
     } finally {
@@ -206,8 +198,9 @@ describe("customer integration", () => {
     try {
       const customerId = await seedCustomerGraph(database.prisma, "rollback");
       const service = new CustomerService(
-        new FailingAuditCustomerRepository(database.prisma),
+        new PrismaCustomerRepository(database.prisma),
         new PrismaTransactionManager(database.prisma),
+        failingAudit,
       );
 
       await expect(service.delete(admin, customerId)).rejects.toThrow(
