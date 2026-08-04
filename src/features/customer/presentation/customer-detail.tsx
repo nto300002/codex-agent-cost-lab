@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 
 import type { AuthenticatedUser } from "../../auth/domain/auth-user";
 import { can } from "../../auth/domain/authorization-policy";
+import { ActivityTimeline } from "../../activity/presentation/activity-timeline";
+import { CustomerDeals } from "../../deal/presentation/customer-deals";
 import {
   CustomerApiError,
   customerRequest,
@@ -14,7 +16,6 @@ import {
   type CustomerView,
 } from "./customer-api";
 import styles from "./customer.module.css";
-import { CustomerDeals } from "../../deal/presentation/customer-deals";
 
 type CustomerResponse = { data: { customer: CustomerView } };
 
@@ -161,6 +162,11 @@ export function CustomerDetail({
         </div>
       </section>
       <CustomerDeals customerId={customer.id} />
+      <ActivityTimeline
+        user={user}
+        customerId={customer.id}
+        customerOwnerId={customer.ownerId}
+      />
     </>
   );
 }

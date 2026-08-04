@@ -9,7 +9,7 @@ export type DealView = {
   expectedCloseDate: string | null;
   createdAt: string;
   updatedAt: string;
-  customer?: { id: string; name: string };
+  customer?: { id: string; name: string; ownerId: string };
   owner?: { id: string; name: string };
 };
 type ErrorBody = {

@@ -8,7 +8,7 @@ import type {
 } from "../domain/deal";
 
 const relations = {
-  customer: { select: { id: true, name: true } },
+  customer: { select: { id: true, name: true, ownerId: true } },
   owner: { select: { id: true, name: true } },
 } as const;
 type DealRecord = Prisma.DealGetPayload<{ include: typeof relations }>;
