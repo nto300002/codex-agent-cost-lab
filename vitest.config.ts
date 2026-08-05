@@ -6,5 +6,6 @@ export default defineConfig({
     include: ["src/**/*.test.ts", "tests/unit/**/*.test.ts"],
     exclude: ["src/**/*.integration.test.ts"],
     restoreMocks: true,
+    slowTestThreshold: 1_000,
   },
 });

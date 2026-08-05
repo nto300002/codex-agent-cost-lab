@@ -6,5 +6,6 @@ export default defineConfig({
     include: ["src/**/*.integration.test.ts", "tests/integration/**/*.test.ts"],
     fileParallelism: true,
     restoreMocks: true,
+    slowTestThreshold: 2_000,
   },
 });

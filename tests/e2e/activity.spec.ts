@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 const customer1 = "10000000-0000-4000-8000-000000000001";
 const activity5 = "30000000-0000-4000-8000-000000000005";

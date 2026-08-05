@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 const seedUsers = [
   { email: "admin@example.test", role: "ADMIN" },
@@ -11,6 +11,24 @@ test("redirects unauthenticated users to login", async ({ page }) => {
 
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByRole("heading", { name: "ログイン" })).toBeVisible();
+});
+
+test("rejects invalid credentials without creating a session", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await page.getByLabel("メールアドレス").fill("member1@example.test");
+  await page.getByLabel("パスワード").fill("wrong-password");
+  await page.getByRole("button", { name: "ログイン" }).click();
+  await expect(
+    page.getByText("メールアドレスまたはパスワードが正しくありません"),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+  expect(
+    (await page.context().cookies()).some(
+      ({ name }) => name === "tracecrm_session",
+    ),
+  ).toBe(false);
 });
 
 for (const user of seedUsers) {

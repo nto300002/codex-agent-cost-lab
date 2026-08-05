@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test("ADMIN filters audit logs and opens a detail", async ({ page }) => {
   await page.goto("/login");
