@@ -43,12 +43,4 @@ export interface CustomerRepository<TTransaction = unknown> {
   ): Promise<void>;
   deleteDeals(customerId: string, transaction: TTransaction): Promise<void>;
   deleteCustomer(customerId: string, transaction: TTransaction): Promise<void>;
-  recordDeleteAudit(
-    input: {
-      actorUserId: string;
-      customer: Customer;
-      relationCounts: CustomerRelationCounts;
-    },
-    transaction: TTransaction,
-  ): Promise<void>;
 }

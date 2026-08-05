@@ -128,26 +128,6 @@ export class PrismaCustomerRepository implements CustomerRepository<Prisma.Trans
     await transaction.customer.delete({ where: { id: customerId } });
   }
 
-  async recordDeleteAudit(
-    input: Parameters<
-      CustomerRepository<Prisma.TransactionClient>["recordDeleteAudit"]
-    >[0],
-    transaction: Prisma.TransactionClient,
-  ) {
-    await transaction.auditLog.create({
-      data: {
-        actorUserId: input.actorUserId,
-        action: "DELETE",
-        entityType: "Customer",
-        entityId: input.customer.id,
-        beforeJson: JSON.stringify({
-          customer: input.customer,
-          relationCounts: input.relationCounts,
-        }),
-      },
-    });
-  }
-
   private database(transaction?: Prisma.TransactionClient): DatabaseClient {
     return transaction ?? this.prisma;
   }

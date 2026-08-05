@@ -23,7 +23,10 @@ export function AppShell({
           <Link href="/customers">顧客</Link>
           <Link href="/deals">商談</Link>
           {user.role === "ADMIN" ? (
-            <Link href="/admin/users">ユーザー</Link>
+            <>
+              <Link href="/admin/users">ユーザー</Link>
+              <Link href="/admin/audit-logs">監査ログ</Link>
+            </>
           ) : null}
         </nav>
         <div className={styles.account}>

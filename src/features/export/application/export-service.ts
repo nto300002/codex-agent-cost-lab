@@ -1,4 +1,5 @@
 import type { AuthenticatedUser } from "../../auth/domain/auth-user";
+import type { AuditRecorder } from "../../audit/application/audit-log-repository";
 import {
   authorizationScope,
   authorize,
@@ -8,7 +9,6 @@ import type { CustomerSearch } from "../../customer/domain/customer";
 import type { DealRepository } from "../../deal/application/deal-repository";
 import { dealStageLabels, type DealSearch } from "../../deal/domain/deal";
 import { createCsv } from "./csv";
-import type { ExportAuditRepository } from "./export-repository";
 
 export type CustomerExportSearch = Omit<CustomerSearch, "page" | "pageSize">;
 export type DealExportSearch = Omit<DealSearch, "page" | "pageSize">;
@@ -27,7 +27,7 @@ export class ExportService {
   constructor(
     private readonly customers: Pick<CustomerRepository, "listForExport">,
     private readonly deals: Pick<DealRepository, "listForExport">,
-    private readonly audit: ExportAuditRepository,
+    private readonly audit: AuditRecorder,
   ) {}
 
   async customersCsv(actor: AuthenticatedUser, search: CustomerExportSearch) {
@@ -68,9 +68,12 @@ export class ExportService {
     );
     await this.audit.record({
       actorUserId: actor.id,
+      action: "EXPORT",
       entityType: "Customer",
-      filters: search,
-      rowCount: customers.length,
+      after: {
+        filterKeys: Object.keys(search).sort(),
+        rowCount: customers.length,
+      },
     });
     return csv;
   }
@@ -109,9 +112,12 @@ export class ExportService {
     );
     await this.audit.record({
       actorUserId: actor.id,
+      action: "EXPORT",
       entityType: "Deal",
-      filters: search,
-      rowCount: deals.length,
+      after: {
+        filterKeys: Object.keys(search).sort(),
+        rowCount: deals.length,
+      },
     });
     return csv;
   }

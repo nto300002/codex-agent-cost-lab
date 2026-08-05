@@ -1,8 +1,5 @@
 import type { Prisma, PrismaClient } from "../../../../generated/prisma/client";
-import type {
-  UserAuditInput,
-  UserRepository,
-} from "../application/user-repository";
+import type { UserRepository } from "../application/user-repository";
 import type { UserCreateData, UserUpdateData } from "../domain/managed-user";
 
 const userSelection = {
@@ -71,24 +68,5 @@ export class PrismaUserRepository implements UserRepository<Prisma.TransactionCl
 
   async deleteSessions(userId: string, transaction: Prisma.TransactionClient) {
     await transaction.session.deleteMany({ where: { userId } });
-  }
-
-  async recordAudit(
-    input: UserAuditInput,
-    transaction: Prisma.TransactionClient,
-  ) {
-    const target = input.after ?? input.before;
-    await transaction.auditLog.create({
-      data: {
-        actorUserId: input.actorUserId,
-        action: input.action,
-        entityType: "User",
-        entityId: target?.id,
-        beforeJson:
-          input.before === undefined ? null : JSON.stringify(input.before),
-        afterJson:
-          input.after === undefined ? null : JSON.stringify(input.after),
-      },
-    });
   }
 }

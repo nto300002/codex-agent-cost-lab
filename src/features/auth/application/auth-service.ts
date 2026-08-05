@@ -58,7 +58,7 @@ export class AuthService {
     const expiresAt = new Date(now.getTime() + sessionDurationMilliseconds);
     const sessionToken = this.tokenGenerator();
 
-    await this.repository.createSession({
+    await this.repository.createSessionWithLoginAudit({
       tokenHash: hashSessionToken(sessionToken),
       userId: user.id,
       expiresAt,
@@ -98,7 +98,7 @@ export class AuthService {
       return;
     }
 
-    await this.repository.deleteSessionByTokenHash(
+    await this.repository.deleteSessionWithLogoutAudit(
       hashSessionToken(sessionToken),
     );
   }

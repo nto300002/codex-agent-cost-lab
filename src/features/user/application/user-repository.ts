@@ -1,16 +1,8 @@
-import type { AuditAction } from "../../../../generated/prisma/client";
 import type {
   ManagedUser,
   UserCreateData,
   UserUpdateData,
 } from "../domain/managed-user";
-
-export type UserAuditInput = {
-  actorUserId: string;
-  action: AuditAction;
-  before?: ManagedUser;
-  after?: ManagedUser;
-};
 
 export interface UserRepository<TTransaction> {
   list(): Promise<ManagedUser[]>;
@@ -28,5 +20,4 @@ export interface UserRepository<TTransaction> {
     transaction: TTransaction,
   ): Promise<ManagedUser>;
   deleteSessions(userId: string, transaction: TTransaction): Promise<void>;
-  recordAudit(input: UserAuditInput, transaction: TTransaction): Promise<void>;
 }
