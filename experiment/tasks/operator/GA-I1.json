@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "GA-I1",
+  "granularity": "G-A",
+  "type": "implementation",
+  "title": "Customer一覧へ最終更新日時を表示する",
+  "startingCommit": "a60191e9160ed69dcf7eedc2c54779c80cb1562e",
+  "publicBrief": "experiment/tasks/public/GA-I1.md",
+  "targetModule": "Customer一覧表示",
+  "reproductionSteps": [
+    "固定SeedでDBをリセットする",
+    "Customer一覧を開く",
+    "APIにupdatedAtが存在する一方で一覧に更新日時列がない開始状態を確認する"
+  ],
+  "scope": {
+    "fileRange": { "min": 1, "max": 3 },
+    "expectedRelevantFiles": [
+      "src/features/customer/presentation/customer-api.ts",
+      "src/features/customer/presentation/customer-list.tsx",
+      "tests/e2e/customer.spec.ts"
+    ],
+    "layers": ["presentation"],
+    "rationale": "既存API値の表示と日時整形に限定され、DBや業務ロジックへ波及しない。"
+  },
+  "acceptanceCriteriaCount": 5,
+  "forbiddenChanges": [
+    "Prisma schemaまたはmigrationの変更",
+    "Customer一覧APIレスポンスの破壊的変更",
+    "Customer詳細画面の仕様変更"
+  ],
+  "humanBaseline": {
+    "minMinutes": 15,
+    "maxMinutes": 30,
+    "measurement": "表示実装、日時確認、UIテスト、型検査に費やすactive working time"
+  },
+  "independence": {
+    "setupStrategy": "fresh-workspace-from-shared-baseline",
+    "resetCommand": "git reset --hard <startingCommit>",
+    "notes": "未実装化パッチは一覧表示だけを除去し、他タスクの開始状態を参照しない。"
+  },
+  "validationCommands": ["pnpm test:customer", "pnpm typecheck"]
+}

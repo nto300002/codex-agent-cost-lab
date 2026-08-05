@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "id": "GC-F1",
+  "granularity": "G-C",
+  "type": "fix",
+  "title": "Customer削除時の関連データ整合性を保証する",
+  "startingCommit": "a60191e9160ed69dcf7eedc2c54779c80cb1562e",
+  "publicBrief": "experiment/tasks/public/GC-F1.md",
+  "targetModule": "Customerグラフ削除と監査",
+  "reproductionSteps": [
+    "固定SeedでDBをリセットする",
+    "ADMINでDeal・Activity・Tagを持つCustomerを削除する",
+    "関連レコード残存、部分確定、または不正確なAuditLogが発生する開始不具合を確認する"
+  ],
+  "scope": {
+    "fileRange": { "min": 9, "max": 20 },
+    "expectedRelevantFiles": [
+      "src/features/customer/application/customer-service.ts",
+      "src/features/customer/application/customer-service.test.ts",
+      "src/features/customer/application/customer-repository.ts",
+      "src/features/customer/infrastructure/prisma-customer-repository.ts",
+      "src/features/customer/infrastructure/customer-service.ts",
+      "src/features/customer/http/customer-handlers.ts",
+      "src/features/audit/application/audit-log-service.ts",
+      "src/features/audit/application/audit-log-repository.ts",
+      "src/features/audit/infrastructure/prisma-audit-log-repository.ts",
+      "tests/integration/customer/customer.integration.test.ts",
+      "tests/e2e/customer-delete.spec.ts"
+    ],
+    "layers": ["application", "infrastructure", "http"],
+    "rationale": "Customer、関連Deal・Activity・Tag、AuditLogとトランザクション境界へ横断的に波及する。"
+  },
+  "acceptanceCriteriaCount": 7,
+  "forbiddenChanges": [
+    "Customerを論理削除へ変更すること",
+    "外部キーCascadeだけで削除順序を代替すること",
+    "監査失敗時に業務削除だけを確定すること",
+    "MEMBERまたはMANAGERへ削除権限を付与すること"
+  ],
+  "humanBaseline": {
+    "minMinutes": 180,
+    "maxMinutes": 240,
+    "measurement": "不具合再現、削除グラフ調査、トランザクション修正、全層回帰確認のactive working time"
+  },
+  "independence": {
+    "setupStrategy": "fresh-workspace-from-shared-baseline",
+    "resetCommand": "git reset --hard <startingCommit>",
+    "notes": "削除整合性の不具合注入パッチだけを新規workspaceへ適用し、監査拡張タスクを先行適用しない。"
+  },
+  "validationCommands": [
+    "pnpm test:customer",
+    "pnpm exec playwright test tests/e2e/customer-delete.spec.ts",
+    "pnpm typecheck"
+  ]
+}

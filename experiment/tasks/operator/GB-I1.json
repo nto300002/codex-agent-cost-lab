@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "GB-I1",
+  "granularity": "G-B",
+  "type": "implementation",
+  "title": "Customer一覧へStatus・Owner絞り込みを追加する",
+  "startingCommit": "a60191e9160ed69dcf7eedc2c54779c80cb1562e",
+  "publicBrief": "experiment/tasks/public/GB-I1.md",
+  "targetModule": "Customer検索",
+  "reproductionSteps": [
+    "固定SeedでDBをリセットする",
+    "Customer一覧を開く",
+    "Status・Ownerの検索条件がAPI、永続化、UIに存在しない開始状態を確認する"
+  ],
+  "scope": {
+    "fileRange": { "min": 4, "max": 8 },
+    "expectedRelevantFiles": [
+      "src/features/customer/application/customer-repository.ts",
+      "src/features/customer/application/customer-service.ts",
+      "src/features/customer/infrastructure/prisma-customer-repository.ts",
+      "src/features/customer/presentation/customer-api.ts",
+      "src/features/customer/presentation/customer-list.tsx",
+      "src/features/customer/presentation/customer.module.css",
+      "tests/e2e/customer.spec.ts"
+    ],
+    "layers": ["application", "infrastructure", "presentation"],
+    "rationale": "検索条件をUIから永続化まで通す複数層変更で、既存Customer境界内に収まる。"
+  },
+  "acceptanceCriteriaCount": 6,
+  "forbiddenChanges": [
+    "Prisma schemaまたはmigrationの変更",
+    "MEMBERの所有者スコープを緩和する変更",
+    "既存name・email・phone検索の削除"
+  ],
+  "humanBaseline": {
+    "minMinutes": 60,
+    "maxMinutes": 120,
+    "measurement": "API・永続化・UI実装、ページネーション確認、E2Eのactive working time"
+  },
+  "independence": {
+    "setupStrategy": "fresh-workspace-from-shared-baseline",
+    "resetCommand": "git reset --hard <startingCommit>",
+    "notes": "検索機能の未実装化パッチを基準状態へ単独適用し、他タスクの実装を累積しない。"
+  },
+  "validationCommands": [
+    "pnpm test:customer",
+    "pnpm exec playwright test tests/e2e/customer.spec.ts",
+    "pnpm typecheck"
+  ]
+}

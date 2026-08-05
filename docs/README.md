@@ -47,6 +47,8 @@
 
 実装順序、依存関係、受入条件を含むIssueバックログは [Issueバックログ](issues/README.md) を参照してください。
 
+6件の比較タスク定義と公開・operator情報の境界は [Experiment task definitions](../experiment/tasks/README.md) を参照してください。
+
 ## 設計判断
 
 | ADR | 内容 |

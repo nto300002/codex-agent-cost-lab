@@ -27,6 +27,7 @@
     "experiment:verify": "pnpm lint && pnpm typecheck && pnpm format:check && pnpm test && pnpm test:e2e && pnpm build",
     "experiment:check-forbidden-changes": "tsx scripts/check-forbidden-changes.ts",
     "experiment:record-baseline": "tsx scripts/verify-baseline.ts --record",
+    "experiment:validate-tasks": "tsx scripts/validate-task-definitions.ts",
     "experiment:verify-baseline": "pnpm experiment:verify && tsx scripts/verify-baseline.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
