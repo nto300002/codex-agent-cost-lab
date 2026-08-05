@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 const password = "TraceCRM!2026";
 const member1Id = "00000000-0000-4000-8000-000000000003";
@@ -88,5 +88,19 @@ test.describe("customer UI", () => {
     await expect(page.getByRole("button", { name: "顧客を削除" })).toHaveCount(
       0,
     );
+  });
+
+  test("MEMBER edits an owned customer", async ({ page }) => {
+    await login(page, "member1@example.test");
+    await page.goto(`/customers/${customer1Id}/edit`);
+    await page.getByLabel("顧客名（必須）").fill("E2E 更新顧客");
+    await page.getByLabel("メモ").fill("担当者による更新");
+    await page.getByRole("button", { name: "変更を保存" }).click();
+
+    await expect(page).toHaveURL(new RegExp(`/customers/${customer1Id}$`));
+    await expect(
+      page.getByRole("heading", { name: "E2E 更新顧客" }),
+    ).toBeVisible();
+    await expect(page.getByText("担当者による更新")).toBeVisible();
   });
 });

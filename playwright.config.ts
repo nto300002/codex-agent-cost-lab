@@ -9,6 +9,7 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",
+  reportSlowTests: { max: 10, threshold: 5_000 },
   use: {
     baseURL,
     trace: "retain-on-failure",
