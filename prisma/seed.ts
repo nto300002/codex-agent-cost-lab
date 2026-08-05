@@ -10,9 +10,10 @@ import {
   UserRole,
 } from "../generated/prisma/client";
 import { createPrismaClient } from "../src/infrastructure/database/client";
+import { BASELINE_CLOCK_ISO } from "../src/shared/time/baseline-time";
 
 const prisma = createPrismaClient();
-const baseDate = new Date("2026-01-01T00:00:00.000Z");
+const baseDate = new Date(BASELINE_CLOCK_ISO);
 const seedPassword = "TraceCRM!2026";
 
 const userIds = {
