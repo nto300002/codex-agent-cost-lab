@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "tasks": {
+    "GA-F1": {
+      "factHash": "d281967fb8dfdc9f47dfb4e5f95d26f91026fd31602a582dd2d2c9f5d4596e07",
+      "prompts": {
+        "P0": "5be8c47c5120d1eb0d772088dfca1f3dc1bc42f6eabb775d06ef6dd953e895fb",
+        "P1": "02e8f5d5fc89524ef8591a4cc965854a86d6c65d9579045b96c1f65a19d2bfa7",
+        "P2": "02e8f5d5fc89524ef8591a4cc965854a86d6c65d9579045b96c1f65a19d2bfa7"
+      }
+    },
+    "GA-I1": {
+      "factHash": "d75fe6c4a08d6fc0dfa5a019642ab9eb535a7b9b26df454bb0cedbb057d68c4f",
+      "prompts": {
+        "P0": "c95a2626c92ce86e0a68a636ac91fab63466333147f094a750176b58361c1a34",
+        "P1": "1ec37e98f79db7e4554da11917a8b3e08cd60e5c10697cdcab2d90adc15ad27b",
+        "P2": "1ec37e98f79db7e4554da11917a8b3e08cd60e5c10697cdcab2d90adc15ad27b"
+      }
+    },
+    "GB-F1": {
+      "factHash": "3e03413973390d1956cab969d0530785a34130ed0e8ec7517191332253032d1a",
+      "prompts": {
+        "P0": "488eb063f37a93bc7361f2ef895e557ea9769e85d2d180714388a6817627cd68",
+        "P1": "fdc9b3157139583c0366f01b24445a4ad22b1972f84163a255b740727de31814",
+        "P2": "fdc9b3157139583c0366f01b24445a4ad22b1972f84163a255b740727de31814"
+      }
+    },
+    "GB-I1": {
+      "factHash": "7395ad1faef01f5a56e571d7572a8e8266f14068d036846f7c2b468169ab5aa5",
+      "prompts": {
+        "P0": "9e69da8bb55cab4db0d9c1ee63c252c4ed4d0e14661dddbcf1dcaa16addec706",
+        "P1": "49415f805319bfd2e8d62cc8bdb1dd0f758920ed48b93f0a3d388f11d95eff20",
+        "P2": "49415f805319bfd2e8d62cc8bdb1dd0f758920ed48b93f0a3d388f11d95eff20"
+      }
+    },
+    "GC-F1": {
+      "factHash": "fd260c0f099fc87c1621546ec02bb2ba8a4bebb6de298413d9f9c24752718140",
+      "prompts": {
+        "P0": "b8407be2e6c89305d28d9a1203c34d9191b2fac52196b31c39574f2f05a57bbe",
+        "P1": "e852e56eadf561512342ce9c43f2ffffe3baba6c7d83d3d3f311f8cc82e03419",
+        "P2": "e852e56eadf561512342ce9c43f2ffffe3baba6c7d83d3d3f311f8cc82e03419"
+      }
+    },
+    "GC-I1": {
+      "factHash": "fda1effa4ee6acd41cbc304a720e6a24d39e5e92b7af38c077eaf8105454bf39",
+      "prompts": {
+        "P0": "ee0b3c3b3cceb804f4507b0c40fe4940f2e4c005fbfcb92edc0fddb0b98c1b35",
+        "P1": "0de51dae3b65ba696e2ce191fe75e49cdfde6cc6aa4d4befb548fa3a465b63fd",
+        "P2": "0de51dae3b65ba696e2ce191fe75e49cdfde6cc6aa4d4befb548fa3a465b63fd"
+      }
+    }
+  }
+}

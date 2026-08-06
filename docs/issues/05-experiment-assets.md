@@ -91,6 +91,8 @@ EXPERIMENT_ASSET_ROOT=/path/to/codex-agent-cost-lab-evaluation \
 
 ## ISSUE-021: P0・P1・P2プロンプトを作成する
 
+> 実装済み: 6タスク×3条件の18プロンプトを公開Briefから決定論的に生成し、P0の自然さ、P1/P2の同一性、タスク事実量、情報漏えい、未置換変数を静的検査する。条件差はレビュー表で固定した。
+
 - 種別: experiment
 - 依存: ISSUE-018
 - 目的: 事実量を揃えたまま、指示構造だけが異なる比較条件を作る。
@@ -111,6 +113,10 @@ EXPERIMENT_ASSET_ROOT=/path/to/codex-agent-cost-lab-evaluation \
 ### 検証
 
 - プロンプトの静的検査と人手レビューを実施する。
+
+```bash
+pnpm experiment:validate-prompts
+```
 
 ---
 
