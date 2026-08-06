@@ -291,6 +291,7 @@ export type ExperimentRunOptions = {
   prepareCommands?: Command[];
   codexCommand?: string;
   codexArgs?: string[];
+  codexVersion?: string;
   codexEnvironment?: Record<string, string | undefined>;
   skipAssetVerification?: boolean;
 };
@@ -428,6 +429,21 @@ export async function runExperiment(options: ExperimentRunOptions) {
     manifest.status = "running";
     await writeManifest();
     const outputLastMessage = path.join(resultDirectory, "last-message.txt");
+    const codexCommand = options.codexCommand ?? "codex";
+    if (options.codexVersion) {
+      manifest.codexCliVersion = options.codexVersion;
+    } else {
+      const version = await runCommand(
+        { command: codexCommand, args: ["--version"] },
+        { cwd: workspace, timeoutMs: 30_000 },
+      );
+      if (version.exitCode !== 0 || version.timedOut) {
+        throw new Error(
+          `Unable to record Codex CLI version: ${version.stderr.trim()}`,
+        );
+      }
+      manifest.codexCliVersion = version.stdout.trim();
+    }
     const codexArgs =
       options.codexArgs ??
       buildCodexArguments({
@@ -440,7 +456,7 @@ export async function runExperiment(options: ExperimentRunOptions) {
       writeFile(path.join(resultDirectory, "stderr.log"), ""),
     ]);
     codexResult = await runCommand(
-      { command: options.codexCommand ?? "codex", args: codexArgs },
+      { command: codexCommand, args: codexArgs },
       {
         cwd: workspace,
         env: {
@@ -462,7 +478,7 @@ export async function runExperiment(options: ExperimentRunOptions) {
         ? "completed"
         : "failed";
     manifest.execution = {
-      command: options.codexCommand ?? "codex",
+      command: codexCommand,
       args: codexArgs,
       exitCode: codexResult.exitCode,
       signal: codexResult.signal,
