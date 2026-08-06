@@ -28,6 +28,17 @@ const operatorTaskSchema = z.object({
   type: z.enum(["fix", "implementation"]),
 });
 
+const creditRateSchema = z.object({
+  confirmedAt: z.string().date(),
+  source: z.string().url(),
+  model: z.string().min(1),
+  perMillionTokens: z.object({
+    uncachedInput: z.number().nonnegative(),
+    cachedInput: z.number().nonnegative(),
+    output: z.number().nonnegative(),
+  }),
+});
+
 type Manifest = z.infer<typeof manifestSchema>;
 type JsonRecord = Record<string, unknown>;
 
@@ -431,6 +442,7 @@ export async function createRunJson(options: {
   manifest: Manifest;
   jsonl: string;
   diff?: string;
+  creditRate?: unknown;
 }) {
   const manifest = manifestSchema.parse(options.manifest);
   const task = operatorTaskSchema.parse(
@@ -459,6 +471,21 @@ export async function createRunJson(options: {
             1_000,
         )
       : 0;
+  const creditRate = options.creditRate
+    ? creditRateSchema.parse(options.creditRate)
+    : undefined;
+  if (creditRate && creditRate.model !== manifest.settings.model) {
+    throw new Error(
+      `Credit rate model does not match run model: ${creditRate.model} != ${manifest.settings.model}`,
+    );
+  }
+  const credits = creditRate
+    ? (trace.uncachedInputTokens / 1_000_000) *
+        creditRate.perMillionTokens.uncachedInput +
+      (trace.cachedInputTokens / 1_000_000) *
+        creditRate.perMillionTokens.cachedInput +
+      (trace.outputTokens / 1_000_000) * creditRate.perMillionTokens.output
+    : 0;
   return {
     schema_version: 1,
     run_id: manifest.runId,
@@ -474,7 +501,8 @@ export async function createRunJson(options: {
     uncached_input_tokens: trace.uncachedInputTokens,
     output_tokens: trace.outputTokens,
     reasoning_output_tokens: trace.reasoningOutputTokens,
-    credits: 0,
+    credits,
+    credit_rate: creditRate ?? null,
     duration_seconds: durationSeconds,
     command_count: trace.commandCount,
     explicit_file_references_total: trace.explicitFileReferencesTotal,
@@ -515,16 +543,24 @@ async function main() {
   const manifestPath = option("--manifest");
   const diffPath = option("--diff");
   const outputPath = option("--output");
+  const creditRatePath = option("--credit-rate");
   if (!jsonlPath || !manifestPath || !outputPath) {
     throw new Error(
-      "usage: tsx scripts/parse-codex-jsonl.ts --jsonl <codex.jsonl> --manifest <manifest.json> [--diff <diff.patch>] --output <run.json>",
+      "usage: tsx scripts/parse-codex-jsonl.ts --jsonl <codex.jsonl> --manifest <manifest.json> [--diff <diff.patch>] [--credit-rate <json>] --output <run.json>",
     );
   }
+  const creditRateDocument = creditRatePath
+    ? (JSON.parse(await readFile(creditRatePath, "utf8")) as unknown)
+    : undefined;
   const result = await createRunJson({
     root: process.cwd(),
     manifest: JSON.parse(await readFile(manifestPath, "utf8")) as Manifest,
     jsonl: await readFile(jsonlPath, "utf8"),
     diff: diffPath ? await readFile(diffPath, "utf8") : undefined,
+    creditRate:
+      creditRateDocument === undefined
+        ? undefined
+        : (record(creditRateDocument)?.creditRate ?? creditRateDocument),
   });
   await writeFile(outputPath, `${JSON.stringify(result, null, 2)}\n`, {
     flag: "wx",
