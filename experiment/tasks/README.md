@@ -11,9 +11,11 @@
 
 ## 独立性
 
-6タスクはすべてoperator定義の同一`startingCommit`から新しいworkspaceを作る。タスクのsetup patchは次のIssueで作成し、各runへ単独適用する。別タスクや前回runの差分を累積しない。
+6タスクはすべてoperator定義の同一`startingCommit`から新しいworkspaceを作る。タスクのsetup patchは非公開評価リポジトリから各runへ単独適用する。別タスクや前回runの差分を累積しない。`GC-I1`は共通開始コミット自体が未実装状態なのでsetup patchを持たない。
 
 `git reset --hard`は、実験ランナーがrunごとに作成した使い捨てworkspaceだけで実行する。開発者の通常workspaceには使用しない。
+
+非公開資産の内容は公開側へ置かず、`experiment/task-assets.lock.json`に評価リポジトリのコミットと各資産のSHA-256だけを保持する。
 
 ## 静的検査
 

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "repository": "nto300002/codex-agent-cost-lab-evaluation",
+  "commit": "91d76f92ad0e7b7dfd869f7e1f5573efad33e273",
+  "assets": {
+    "asset-manifest.json": "83472f790d229fe63ccf8a57b659df6026d63f74564ffa53f4c47416410affa3",
+    "evaluators/evaluate.mjs": "0282504655357e12e3404fcbee294d14b8bed979fe38de8a2e25ca2dde1d6b8f",
+    "scripts/verify-task.mjs": "2727c21bba6e86ac02a892235fa981d6e25d797da292c1c360087df3fb60ceea",
+    "tasks/GA-F1/reference.patch": "ee141699b6fe14c19ed741ee2ee08b91cfbbf5179551a5f7b694f7fc2cbdb2c5",
+    "tasks/GA-F1/setup.patch": "7f1c631a0b27b50d82bb1b46a4f7b13569c8ae268b40c9efc624591ee9f6f9fc",
+    "tasks/GA-I1/reference.patch": "8b79ce9b04e38ed39be12178690c524ea8b8d1c7d2ec64fc368950165f5e0795",
+    "tasks/GA-I1/setup.patch": "7fcb4f4cf1ff534b90bced88fe8c6d867d4c34ed262b3bc783a67301380c6915",
+    "tasks/GB-F1/reference.patch": "964ff77996a1ad928154882d01084f00a0c145d3f4395698169bc988fae31a77",
+    "tasks/GB-F1/setup.patch": "fa5383d9e55a11c5036817e50c87a30a2637cd2687bdd686b42127628f13d0e8",
+    "tasks/GB-I1/reference.patch": "a8609d662432c5262a2b8875718b31f7663b6ed5d8b48beaca4fccd981cbfb56",
+    "tasks/GB-I1/setup.patch": "a2efc0400709432f8b0d1816768276b53b17ff523794887bf89458e9c48d7503",
+    "tasks/GC-F1/reference.patch": "baa1232149b9fe4768216dde72639efafa476e0d4c0a8943efb54a639fe8d546",
+    "tasks/GC-F1/setup.patch": "0d88f73b6fd77c216cb44f1f3533f697ad9697a420c461e51160633b9967167e",
+    "tasks/GC-I1/reference.patch": "e6ab6457a4d3970dc48e090acf6ef93658fa90f7990b25abbd126870605e1ee8"
+  }
+}
