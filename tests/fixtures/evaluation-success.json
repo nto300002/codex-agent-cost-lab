@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "taskId": "GB-I1",
+  "evaluatedAt": "2026-08-06T01:00:00.000Z",
+  "success": true,
+  "qualityScore": 100,
+  "maxScore": 100,
+  "components": {
+    "hiddenEvaluation": 60,
+    "publicRegression": 20,
+    "changeScope": 10,
+    "forbiddenChanges": 10
+  },
+  "changedFiles": ["src/customer.ts"],
+  "forbiddenFiles": [],
+  "failures": []
+}

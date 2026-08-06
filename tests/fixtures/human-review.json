@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "review-7f3a91bc",
+  "reviewer": "reviewer-01",
+  "recordedAt": "2026-08-06T02:00:00.000Z",
+  "fixMinutes": 12.5,
+  "conditionVisible": false,
+  "findings": [
+    {
+      "category": "maintainability",
+      "severity": "minor",
+      "comment": "Extract duplicated filter construction."
+    }
+  ]
+}

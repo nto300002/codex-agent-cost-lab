@@ -27,6 +27,7 @@
     "experiment:verify": "pnpm lint && pnpm typecheck && pnpm format:check && pnpm test && pnpm test:e2e && pnpm build",
     "experiment:check-forbidden-changes": "tsx scripts/check-forbidden-changes.ts",
     "experiment:configure-agents": "tsx scripts/configure-agent-condition.ts",
+    "experiment:evaluate-run": "tsx scripts/evaluate-experiment-run.ts",
     "experiment:plan-runs": "tsx scripts/experiment-runner.ts plan",
     "experiment:parse-run": "tsx scripts/parse-codex-jsonl.ts",
     "experiment:run": "tsx scripts/experiment-runner.ts run",

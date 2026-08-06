@@ -103,6 +103,8 @@ pnpm experiment:parse-run \
 
 ## ISSUE-025: 自動評価と人手評価入力を統合する
 
+状態: 実装済み（`scripts/evaluate-experiment-run.ts`）
+
 - 種別: experiment
 - 依存: ISSUE-020、ISSUE-023、ISSUE-024
 - 目的: 実行結果へ成功判定、品質、禁止変更、人手修正量を付与する。
@@ -124,6 +126,25 @@ pnpm experiment:parse-run \
 ### 検証
 
 - 正解、部分点、禁止変更、評価器異常のfixtureで検証する。
+
+### 実装メモ
+
+- private evaluatorをworkspace外から実行し、隠し評価、公開回帰、変更範囲、禁止変更の点数とログをrunへ統合する。
+- 評価器が終了コード1でも有効な評価JSONを出した場合は、評価器異常ではなく実装不合格として扱う。評価出力の欠損・形式不正・起動失敗・timeoutだけを評価器異常にする。
+- `execution_status`、`evaluation_status`、`outcome`を分離し、成功、実装不合格、Codex実行失敗、評価器異常を区別する。すべてのrunで`included_in_cost_analysis: true`を保持する。
+- 人手入力は条件を含まないopaqueなreview ID、担当者、入力日時、修正分数、レビュー指摘を記録し、`conditionVisible: false`を必須とする。レビュー完了後にoperatorが対象runへ統合し、レビュー担当者へP0/P1/P2を露出しない。
+
+```bash
+pnpm experiment:evaluate-run \
+  --asset-root /path/to/private-evaluation \
+  --workspace /path/to/run-worktree \
+  --diff /path/to/run/diff.patch \
+  --run-json /path/to/run/run.json \
+  --manifest /path/to/run/manifest.json \
+  --human-review /path/to/run/human-review.json \
+  --output /path/to/run/evaluated-run.json \
+  --log /path/to/run/evaluation-log.json
+```
 
 ---
 
