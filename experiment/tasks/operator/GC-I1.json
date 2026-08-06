@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "id": "GC-I1",
+  "granularity": "G-C",
+  "type": "implementation",
+  "title": "主要操作へAuditLogを追加する",
+  "startingCommit": "a60191e9160ed69dcf7eedc2c54779c80cb1562e",
+  "publicBrief": "experiment/tasks/public/GC-I1.md",
+  "targetModule": "Customer・Deal・Activity横断監査",
+  "reproductionSteps": [
+    "固定SeedでDBをリセットする",
+    "Customer、Deal、Activityの対象操作を各ロールで実行する",
+    "既存AuditLog一覧に対象操作の記録が作成されない開始状態を確認する"
+  ],
+  "scope": {
+    "fileRange": { "min": 9, "max": 20 },
+    "expectedRelevantFiles": [
+      "src/features/audit/application/audit-log-service.ts",
+      "src/features/audit/application/audit-log-repository.ts",
+      "src/features/audit/infrastructure/prisma-audit-log-repository.ts",
+      "src/features/customer/application/customer-service.ts",
+      "src/features/customer/infrastructure/prisma-customer-repository.ts",
+      "src/features/customer/http/customer-handlers.ts",
+      "src/features/deal/application/deal-service.ts",
+      "src/features/deal/infrastructure/prisma-deal-repository.ts",
+      "src/features/deal/http/deal-handlers.ts",
+      "src/features/activity/application/activity-service.ts",
+      "src/features/activity/infrastructure/prisma-activity-repository.ts",
+      "src/features/activity/http/activity-handlers.ts",
+      "tests/integration/customer/customer.integration.test.ts",
+      "tests/integration/deal/deal.integration.test.ts",
+      "tests/integration/activity/activity.integration.test.ts",
+      "tests/e2e/audit.spec.ts"
+    ],
+    "layers": ["application", "infrastructure", "http"],
+    "rationale": "三つの業務機能と共通監査基盤を同一トランザクション方針で統合する横断変更である。"
+  },
+  "acceptanceCriteriaCount": 9,
+  "forbiddenChanges": [
+    "AuditLog公開レスポンス形式の変更",
+    "既存認可範囲の拡大",
+    "パスワード、セッション、Cookie、不要な個人情報の記録",
+    "業務処理と監査記録を別トランザクションで確定すること"
+  ],
+  "humanBaseline": {
+    "minMinutes": 180,
+    "maxMinutes": 240,
+    "measurement": "共通設計、三機能への適用、トランザクション検証、結合・E2E確認のactive working time"
+  },
+  "independence": {
+    "setupStrategy": "fresh-workspace-from-shared-baseline",
+    "resetCommand": "git reset --hard <startingCommit>",
+    "notes": "監査拡張が存在しない開始パッチを基準workspaceへ単独適用し、Customer削除修正を前提にしない。"
+  },
+  "validationCommands": [
+    "pnpm test:audit",
+    "pnpm test:customer",
+    "pnpm test:deal",
+    "pnpm test:activity",
+    "pnpm exec playwright test tests/e2e/audit.spec.ts",
+    "pnpm typecheck"
+  ]
+}

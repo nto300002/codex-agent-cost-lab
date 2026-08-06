@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "GB-F1",
+  "granularity": "G-B",
+  "type": "fix",
+  "title": "MEMBERによる担当外Deal更新を拒否する",
+  "startingCommit": "a60191e9160ed69dcf7eedc2c54779c80cb1562e",
+  "publicBrief": "experiment/tasks/public/GB-F1.md",
+  "targetModule": "Deal更新認可",
+  "reproductionSteps": [
+    "固定SeedでDBをリセットする",
+    "member1で認証してmember2所有DealへPATCHする",
+    "閲覧は制限される一方で更新が成功する開始不具合を確認する"
+  ],
+  "scope": {
+    "fileRange": { "min": 4, "max": 8 },
+    "expectedRelevantFiles": [
+      "src/features/deal/application/deal-service.ts",
+      "src/features/deal/application/deal-repository.ts",
+      "src/features/deal/infrastructure/prisma-deal-repository.ts",
+      "src/features/deal/http/deal-handlers.ts",
+      "tests/integration/deal/deal.integration.test.ts"
+    ],
+    "layers": ["application", "infrastructure", "http"],
+    "rationale": "認可判断、所有者取得、HTTP応答を横断するが、CustomerやDB schemaには波及しない。"
+  },
+  "acceptanceCriteriaCount": 6,
+  "forbiddenChanges": [
+    "ロール定義または認可マトリクス全体の変更",
+    "Prisma schemaまたはmigrationの変更",
+    "UI非表示だけで認可を代替する変更"
+  ],
+  "humanBaseline": {
+    "minMinutes": 60,
+    "maxMinutes": 120,
+    "measurement": "再現、認可経路調査、複数層修正、結合・E2E確認のactive working time"
+  },
+  "independence": {
+    "setupStrategy": "fresh-workspace-from-shared-baseline",
+    "resetCommand": "git reset --hard <startingCommit>",
+    "notes": "更新経路だけへ不具合を注入し、他のDeal閲覧・作成機能と他タスク差分を保持しない。"
+  },
+  "validationCommands": [
+    "pnpm test:deal",
+    "pnpm exec playwright test tests/e2e/deal.spec.ts",
+    "pnpm typecheck"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "GA-F1",
+  "granularity": "G-A",
+  "type": "fix",
+  "title": "Customer更新時の空電話番号を正規化する",
+  "startingCommit": "a60191e9160ed69dcf7eedc2c54779c80cb1562e",
+  "publicBrief": "experiment/tasks/public/GA-F1.md",
+  "targetModule": "Customer入力検証",
+  "reproductionSteps": [
+    "固定SeedでDBをリセットする",
+    "Customer更新APIへ phone が空文字のPATCHを送信する",
+    "500応答となり既存の電話番号が正しく正規化されないことを確認する"
+  ],
+  "scope": {
+    "fileRange": { "min": 1, "max": 3 },
+    "expectedRelevantFiles": [
+      "src/features/customer/http/customer-schema.ts",
+      "src/features/customer/http/customer-schema.test.ts"
+    ],
+    "layers": ["http"],
+    "rationale": "単一の入力境界に閉じた正規化不具合で、実装と局所テストだけで完結する。"
+  },
+  "acceptanceCriteriaCount": 5,
+  "forbiddenChanges": [
+    "Prisma schemaまたはmigrationの変更",
+    "Customer公開API形式の変更",
+    "Customer以外の機能変更"
+  ],
+  "humanBaseline": {
+    "minMinutes": 15,
+    "maxMinutes": 30,
+    "measurement": "再現、実装修正、局所テスト、型検査に費やすactive working time"
+  },
+  "independence": {
+    "setupStrategy": "fresh-workspace-from-shared-baseline",
+    "resetCommand": "git reset --hard <startingCommit>",
+    "notes": "各runで同じ不具合注入パッチを新規workspaceへ適用し、他タスクの差分を継承しない。"
+  },
+  "validationCommands": ["pnpm test:customer", "pnpm typecheck"]
+}
