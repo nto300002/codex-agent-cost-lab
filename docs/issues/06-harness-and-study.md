@@ -2,6 +2,8 @@
 
 ## ISSUE-023: 隔離ワークスペースと実験ランナーを実装する
 
+状態: 実装済み（`scripts/experiment-runner.ts`、実Codex実行前のモデル・予算承認を除く）
+
 - 種別: experiment
 - 依存: ISSUE-019〜ISSUE-022
 - 目的: 全試行を同じ開始状態・設定で非対話実行する。
@@ -24,6 +26,33 @@
 ### 検証
 
 - ダミー1タスクを連続実行し、互いの状態が混入しないことを確認する。
+
+### 実装メモ
+
+- `createRunPlan`は反復ごとに全タスク×P0/P1/P2のブロックを作り、保存したSeedから決定論的にシャッフルする。run IDは`<task>-<condition>-runNN`で生成し、重複を拒否する。
+- `runExperiment`は開始コミットからrun専用detached worktreeを作り、private assetのsetup patch、依存準備、`pnpm db:reset`、AGENTS条件の順に適用する。Codex起動直前の状態をprepared baselineとして隔離worktree内だけでコミットし、setup差分とCodexの変更を分離する。開発者のcheckoutをreset・cleanしない。
+- Codexはユーザー設定・rules・セッション永続化を無効にし、モデル、reasoning effort、`workspace-write` sandbox、承認なし、sandbox内ネットワークなし、Web検索なしを引数で固定する。
+- stdout JSONL、stderr、最終メッセージ、準備ログ、diff、git status、manifestをworktree外へ保存する。成功・失敗・timeoutのいずれでもworktreeを自動削除しない。
+- 実Codexを呼ばないfixtureで同一タスクを2回連続実行し、run間の変更が混入しないこと、およびtimeout後も部分ログとworktreeが残ることを検証する。
+
+実行順ファイルの生成例（出力先は公開リポジトリ外）:
+
+```bash
+pnpm experiment:plan-runs --seed lt-main-2026 --repetitions 5 \
+  --output /path/to/experiment-results/run-plan.json
+```
+
+実試行はモデル、reasoning effort、タイムアウト、予算の承認後に次の形式で開始する。既定の準備処理は`pnpm install --frozen-lockfile`と`pnpm db:reset`であり、private asset rootを明示する。
+
+```bash
+pnpm exec tsx scripts/experiment-runner.ts run \
+  --task GB-I1 --condition P2 --repetition 3 \
+  --model <fixed-model> --reasoning-effort <fixed-effort> \
+  --timeout-minutes <approved-minutes> \
+  --work-root /path/to/experiment-worktrees \
+  --result-root /path/to/experiment-results/raw \
+  --asset-root /path/to/codex-agent-cost-lab-evaluation
+```
 
 ---
 
