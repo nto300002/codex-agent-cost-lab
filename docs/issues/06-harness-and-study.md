@@ -194,6 +194,8 @@ pnpm experiment:aggregate \
 
 ## ISSUE-027: パイロット実験を実施する
 
+状態: 実行準備中（固定設定・45試行計画・成果物監査を実装済み）
+
 - 種別: study
 - 依存: ISSUE-026
 - 目的: 本実験前にコスト、欠損、難易度、タイムアウトを確認する。
@@ -215,6 +217,15 @@ pnpm experiment:aggregate \
 ### 検証
 
 - raw件数、run ID重複、必須指標欠損を自動検査する。
+
+### 実行メモ
+
+- `experiment/pilot-config.json`へモデル、CLI、タイムアウト、予算、対象3タスク、Seed、開始コミット、非公開評価資産コミットを固定する。
+- 同configへ公式Codexレートの確認日・出典と、非キャッシュ入力・キャッシュ入力・出力のcredits単価を固定する。parserは推論tokenを二重加算せず、各runのcreditsをtoken内訳から計算する。
+- `pnpm experiment:pilot plan --output <outside-repo>/run-plan.json`で、反復ごとに3タスク×3条件をSeed付きで並べ替えた45試行を生成する。
+- run成果物は公開リポジトリ外へ保存する。`pnpm experiment:pilot verify --plan <run-plan.json> --result-root <raw> --output <pilot-report.json>`で45件、run ID、raw・評価成果物、必須指標、固定モデル・reasoning・粒度別timeoutを検査する。
+- credit値が全件0の場合は未計測として扱い、予算判断を成功扱いにしない。45件が揃った後も、粒度・timeout・予算の人間判断と、本実験向け条件の再固定記録がなければGo判定にしない。
+- DBリセットは実験ランナーが作る使い捨てworktree内のSQLiteだけを対象とする。Prismaが要求する場合は、警告表示後に得たユーザーの明示的同意文を`PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION`へ渡す。
 
 ---
 

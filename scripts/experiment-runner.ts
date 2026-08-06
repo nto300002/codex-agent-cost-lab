@@ -1,6 +1,14 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { access, copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import {
+  access,
+  chmod,
+  copyFile,
+  mkdir,
+  readFile,
+  unlink,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -189,6 +197,18 @@ export function buildCodexArguments(options: {
     "--strict-config",
     "--ignore-user-config",
     "--ignore-rules",
+    "--disable",
+    "fast_mode",
+    "--disable",
+    "multi_agent",
+    "--disable",
+    "memories",
+    "--disable",
+    "apps",
+    "--disable",
+    "plugins",
+    "--disable",
+    "browser_use",
     "--color",
     "never",
     "--sandbox",
@@ -293,6 +313,7 @@ export type ExperimentRunOptions = {
   codexArgs?: string[];
   codexVersion?: string;
   codexEnvironment?: Record<string, string | undefined>;
+  authFile?: string;
   skipAssetVerification?: boolean;
 };
 
@@ -343,6 +364,7 @@ export async function runExperiment(options: ExperimentRunOptions) {
   await writeManifest();
 
   let codexResult: CommandResult | undefined;
+  const temporaryAuthPath = path.join(codexHome, "auth.json");
   try {
     if (!options.skipAssetVerification) {
       await verifyTaskAssets(repositoryRoot, options.assetRoot);
@@ -427,6 +449,9 @@ export async function runExperiment(options: ExperimentRunOptions) {
     ).trim();
 
     manifest.status = "running";
+    manifest.authentication = options.authFile
+      ? "temporary-auth-file"
+      : "environment-or-system-store";
     await writeManifest();
     const outputLastMessage = path.join(resultDirectory, "last-message.txt");
     const codexCommand = options.codexCommand ?? "codex";
@@ -455,6 +480,10 @@ export async function runExperiment(options: ExperimentRunOptions) {
       writeFile(path.join(resultDirectory, "codex.jsonl"), ""),
       writeFile(path.join(resultDirectory, "stderr.log"), ""),
     ]);
+    if (options.authFile) {
+      await copyFile(path.resolve(options.authFile), temporaryAuthPath);
+      await chmod(temporaryAuthPath, 0o600);
+    }
     codexResult = await runCommand(
       { command: codexCommand, args: codexArgs },
       {
@@ -489,6 +518,7 @@ export async function runExperiment(options: ExperimentRunOptions) {
     manifest.status = "failed";
     manifest.error = error instanceof Error ? error.message : String(error);
   } finally {
+    if (await exists(temporaryAuthPath)) await unlink(temporaryAuthPath);
     if (await exists(workspace)) {
       const [diff, status] = await Promise.all([
         gitCapture(workspace, ["diff", "--binary", "--no-ext-diff", "HEAD"]),
@@ -575,6 +605,7 @@ async function main() {
       .string()
       .min(1)
       .parse(option("--asset-root") ?? process.env.EXPERIMENT_ASSET_ROOT);
+    const authFile = option("--auth-file") ?? process.env.CODEX_AUTH_FILE;
     const entry: RunPlanEntry = {
       taskId,
       condition,
@@ -597,13 +628,14 @@ async function main() {
         approvalPolicy: "never",
         timeoutMs: Math.round(timeoutMinutes * 60_000),
       },
+      authFile,
     });
     console.log(JSON.stringify(result));
     if (result.status !== "completed") process.exitCode = 1;
   } else {
     console.error(`usage:
   tsx scripts/experiment-runner.ts plan --seed <seed> --output <outside-repo.json> [--repetitions 5]
-  tsx scripts/experiment-runner.ts run --task <id> --condition <P0|P1|P2> --repetition <1-99> --model <model> --reasoning-effort <effort> --timeout-minutes <n> --work-root <outside-repo> --result-root <outside-repo> [--asset-root <private-repo>]`);
+  tsx scripts/experiment-runner.ts run --task <id> --condition <P0|P1|P2> --repetition <1-99> --model <model> --reasoning-effort <effort> --timeout-minutes <n> --work-root <outside-repo> --result-root <outside-repo> [--asset-root <private-repo>] [--auth-file <codex-auth.json>]`);
     process.exitCode = 1;
   }
 }
