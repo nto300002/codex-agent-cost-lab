@@ -29,6 +29,8 @@
 
 ## ISSUE-019: 開始状態と正解パッチを作成する
 
+> 実装済み: 6タスクの開始状態と人間作成の参照パッチを非公開評価リポジトリへ分離し、コミットとSHA-256を公開側で固定した。全タスクで開始時失敗→参照適用後成功を自動確認する。
+
 - 種別: experiment
 - 依存: ISSUE-018
 - 目的: 各タスクの再現可能な不具合・未実装状態と参照解を用意する。
@@ -49,6 +51,11 @@
 ### 検証
 
 - 各タスクで開始状態→失敗、正解適用→成功を自動確認する。
+
+```bash
+EXPERIMENT_ASSET_ROOT=/path/to/codex-agent-cost-lab-evaluation \
+  pnpm experiment:verify-task-assets
+```
 
 ---
 
