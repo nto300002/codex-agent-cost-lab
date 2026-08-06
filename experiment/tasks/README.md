@@ -17,6 +17,8 @@
 
 非公開資産の内容は公開側へ置かず、`experiment/task-assets.lock.json`に評価リポジトリのコミットと各資産のSHA-256だけを保持する。
 
+評価器は隠し評価、公開回帰、変更範囲、禁止変更を別々に採点する。結果は`experiment/evaluation-result.schema.json`に従うJSONとしてrunごとのリポジトリ外記録領域へ保存する。
+
 ## 静的検査
 
 ```bash

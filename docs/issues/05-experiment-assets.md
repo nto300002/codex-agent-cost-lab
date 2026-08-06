@@ -61,6 +61,8 @@ EXPERIMENT_ASSET_ROOT=/path/to/codex-agent-cost-lab-evaluation \
 
 ## ISSUE-020: 隠し評価テストと採点ルールを作成する
 
+> 実装済み: リポジトリ外の隠し評価、公開回帰、変更範囲、禁止変更を100点満点で採点し、成功判定・内訳・失敗理由をJSON保存する。6タスクすべてで正解100点、未変更と意図的誤答の不合格を確認する。
+
 - 種別: experiment
 - 依存: ISSUE-019
 - 目的: Codexの自己申告に依存せず成功と品質を判定する。
@@ -82,6 +84,8 @@ EXPERIMENT_ASSET_ROOT=/path/to/codex-agent-cost-lab-evaluation \
 ### 検証
 
 - 正解、未変更、意図的誤答の3種類で評価器を検証する。
+
+評価結果の公開契約は`experiment/evaluation-result.schema.json`、評価ロジックと隠しテストは公開リポジトリ外で管理する。
 
 ---
 

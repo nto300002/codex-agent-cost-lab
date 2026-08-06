@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nto300002/codex-agent-cost-lab/blob/main/experiment/evaluation-result.schema.json",
+  "title": "Codex experiment evaluation result",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "taskId",
+    "evaluatedAt",
+    "success",
+    "qualityScore",
+    "maxScore",
+    "components",
+    "changedFiles",
+    "forbiddenFiles",
+    "failures"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "taskId": {
+      "enum": ["GA-F1", "GA-I1", "GB-F1", "GB-I1", "GC-F1", "GC-I1"]
+    },
+    "evaluatedAt": { "type": "string", "format": "date-time" },
+    "success": { "type": "boolean" },
+    "qualityScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "maxScore": { "const": 100 },
+    "components": {
+      "type": "object",
+      "required": [
+        "hiddenEvaluation",
+        "publicRegression",
+        "changeScope",
+        "forbiddenChanges"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "hiddenEvaluation": { "type": "integer", "minimum": 0, "maximum": 60 },
+        "publicRegression": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "changeScope": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "forbiddenChanges": { "type": "integer", "minimum": 0, "maximum": 10 }
+      }
+    },
+    "changedFiles": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "forbiddenFiles": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "failures": { "type": "array", "items": { "type": "string" } }
+  }
+}
