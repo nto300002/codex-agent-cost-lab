@@ -27,6 +27,8 @@
     "experiment:verify": "pnpm lint && pnpm typecheck && pnpm format:check && pnpm test && pnpm test:e2e && pnpm build",
     "experiment:check-forbidden-changes": "tsx scripts/check-forbidden-changes.ts",
     "experiment:configure-agents": "tsx scripts/configure-agent-condition.ts",
+    "experiment:plan-runs": "tsx scripts/experiment-runner.ts plan",
+    "experiment:run": "tsx scripts/experiment-runner.ts run",
     "experiment:record-baseline": "tsx scripts/verify-baseline.ts --record",
     "experiment:render-prompts": "tsx scripts/render-prompts.ts --write",
     "experiment:validate-tasks": "tsx scripts/validate-task-definitions.ts",
