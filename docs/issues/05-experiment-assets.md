@@ -122,6 +122,8 @@ pnpm experiment:validate-prompts
 
 ## ISSUE-022: 最小・過剰AGENTS.md条件を作成する
 
+> 実装済み: P2用の最小版と任意P3用の過剰版を固定し、P0/P1の不在、P2/P3の配置、親階層・専用CODEX_HOMEからの混入防止、適用前後ハッシュ記録をrun前に自動検査する。
+
 - 種別: experiment
 - 依存: ISSUE-017、ISSUE-021
 - 目的: P2と任意のP3でリポジトリ指示の効果を比較できるようにする。
@@ -142,3 +144,8 @@ pnpm experiment:validate-prompts
 ### 検証
 
 - 各条件の実行前検査で期待する `AGENTS.md` 状態を確認する。
+
+```bash
+pnpm experiment:validate-agents
+pnpm experiment:configure-agents -- --condition P2 --workspace <isolated-workspace> --codex-home <experiment-codex-home> --record <outside-result.json> --apply
+```

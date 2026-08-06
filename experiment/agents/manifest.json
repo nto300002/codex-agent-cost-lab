@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "conditions": {
+    "P0": {
+      "template": null,
+      "sha256": null
+    },
+    "P1": {
+      "template": null,
+      "sha256": null
+    },
+    "P2": {
+      "template": "minimal-AGENTS.md",
+      "sha256": "0f895b67fc013b198369314454947535280c16a20074c36191a8b2e9a23f99c5"
+    },
+    "P3": {
+      "template": "verbose-AGENTS.md",
+      "sha256": "fa5df1be0b33e2761548d6fd87c819418f059bc66c884290f66aba3a53ea2c0d"
+    }
+  }
+}
