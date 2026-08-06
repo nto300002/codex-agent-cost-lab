@@ -28,6 +28,7 @@
     "experiment:check-forbidden-changes": "tsx scripts/check-forbidden-changes.ts",
     "experiment:configure-agents": "tsx scripts/configure-agent-condition.ts",
     "experiment:plan-runs": "tsx scripts/experiment-runner.ts plan",
+    "experiment:parse-run": "tsx scripts/parse-codex-jsonl.ts",
     "experiment:run": "tsx scripts/experiment-runner.ts run",
     "experiment:record-baseline": "tsx scripts/verify-baseline.ts --record",
     "experiment:render-prompts": "tsx scripts/render-prompts.ts --write",

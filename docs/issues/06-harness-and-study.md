@@ -58,6 +58,8 @@ pnpm exec tsx scripts/experiment-runner.ts run \
 
 ## ISSUE-024: Codex JSONLパーサーを実装する
 
+状態: 実装済み（`scripts/parse-codex-jsonl.ts`）
+
 - 種別: experiment
 - 依存: ISSUE-023
 - 目的: 実行軌跡からトークン、探索、コマンド、時間を抽出する。
@@ -80,6 +82,22 @@ pnpm exec tsx scripts/experiment-runner.ts run \
 ### 検証
 
 - 固定fixtureと期待集計値による単体テストが成功する。
+
+### 実装メモ
+
+- `turn.completed.usage`を全thread・全turnで合算し、cached inputとreasoning outputを独立項目として保持する。非キャッシュ入力だけを`input - cached input`で算出する。
+- `item.started`、`item.updated`、`item.completed`をthread ID＋item IDで統合し、コマンドを二重計数しない。未完了item/turnは診断情報へ残す。
+- コマンドからテスト、全テスト、横断検索、明示的ファイル参照を抽出する。変更ファイルと追加・削除行はrunのunified diffを正とする。
+- 未知イベント、未知item type、不正JSON、usage不正を破棄せず、run JSONの`parser`診断へ保存する。
+- 要件19章のsnake_case形式へ、run manifest、operator task定義、JSONL、diffを統合して出力する。Codex実行時間とCLIバージョンはrunner manifestから取得し、評価・料金項目は後続ISSUE-025・ISSUE-026が上書きする初期値とする。
+
+```bash
+pnpm experiment:parse-run \
+  --jsonl /path/to/run/codex.jsonl \
+  --manifest /path/to/run/manifest.json \
+  --diff /path/to/run/diff.patch \
+  --output /path/to/run/run.json
+```
 
 ---
 
