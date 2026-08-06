@@ -87,15 +87,17 @@ export async function verifyTaskAssets(
   }
 
   if (execute) {
-    await execFile(
-      process.execPath,
-      [
-        path.join(resolvedAssets, "scripts/verify-task.mjs"),
-        "--all",
-        resolvedRepository,
-      ],
-      { cwd: resolvedAssets },
-    );
+    for (const script of ["verify-task.mjs", "verify-evaluator.mjs"]) {
+      await execFile(
+        process.execPath,
+        [
+          path.join(resolvedAssets, "scripts", script),
+          ...(script === "verify-task.mjs" ? ["--all"] : []),
+          resolvedRepository,
+        ],
+        { cwd: resolvedAssets },
+      );
+    }
   }
   return { commit: lock.commit, assetCount: Object.keys(lock.assets).length };
 }

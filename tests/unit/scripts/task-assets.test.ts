@@ -6,6 +6,36 @@ import {
 } from "../../../scripts/verify-task-assets";
 
 describe("task asset guards", () => {
+  it("pins the complete private evaluator and a 100-point result contract", async () => {
+    const root = process.cwd();
+    const lock = validateAssetLock(
+      JSON.parse(
+        await readFile(
+          path.join(root, "experiment/task-assets.lock.json"),
+          "utf8",
+        ),
+      ),
+    );
+    const resultSchema = JSON.parse(
+      await readFile(
+        path.join(root, "experiment/evaluation-result.schema.json"),
+        "utf8",
+      ),
+    ) as {
+      properties: {
+        components: { properties: Record<string, { maximum: number }> };
+      };
+    };
+
+    expect(Object.keys(lock.assets)).toHaveLength(17);
+    expect(
+      Object.values(resultSchema.properties.components.properties).reduce(
+        (total, component) => total + component.maximum,
+        0,
+      ),
+    ).toBe(100);
+  });
+
   it("accepts a pinned external asset manifest", () => {
     expect(
       validateAssetLock({
@@ -43,3 +73,5 @@ describe("task asset guards", () => {
     ).toThrow("outside the public repository");
   });
 });
+import { readFile } from "node:fs/promises";
+import path from "node:path";
