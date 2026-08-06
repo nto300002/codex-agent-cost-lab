@@ -150,6 +150,8 @@ pnpm experiment:evaluate-run \
 
 ## ISSUE-026: 集計・コスト計算・グラフ出力を実装する
 
+状態: 実装済み（`scripts/aggregate-experiment-results.ts`）
+
 - 種別: experiment
 - 依存: ISSUE-024、ISSUE-025
 - 目的: 粒度内でP0/P1/P2を比較できる集計を生成する。
@@ -172,6 +174,21 @@ pnpm experiment:evaluate-run \
 ### 検証
 
 - 手計算可能なfixtureで全指標を照合する。
+
+### 実装メモ
+
+- evaluated run JSONLと、確認日・出典・モデル別単価・為替観測日・人件費単価を持つpricing JSONを入力とする。料金をコードへ埋め込まない。
+- 非キャッシュ入力、キャッシュ入力、出力からAPI単価相当額を算出し、reasoning outputは出力へ二重加算しない。人手修正費を加えた総コストも算出する。
+- R-7方式で中央値、最小、最大、Q1、Q3、IQRを生成し、成功率、禁止変更数、評価器異常数、成功1件当たり指標を併記する。
+- タスク×条件と粒度×条件だけを集計し、全粒度を混ぜたsummaryや絶対値ランキングを生成しない。成功0件では成功1件当たり値を`null`、理由を`no_successful_runs`とする。
+- `summary.json`、cost付与済みJSONL、タスク別CSV、粒度別CSV、LTグラフ用long-format CSVを生成する。生成日時を含めず、同じrawとpricingからバイト単位で同一成果物を再生成できる。
+
+```bash
+pnpm experiment:aggregate \
+  --runs /path/to/evaluated-runs.jsonl \
+  --pricing /path/to/frozen-pricing.json \
+  --output-dir /path/to/new-summary-directory
+```
 
 ---
 

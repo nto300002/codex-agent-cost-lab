@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "confirmedAt": "2026-08-06",
+  "source": "Synthetic fixture rates for unit tests",
+  "apiCurrency": "USD",
+  "ratesPerMillionTokens": {
+    "test-model": {
+      "uncachedInput": 2,
+      "cachedInput": 1,
+      "output": 4
+    }
+  },
+  "exchangeRate": {
+    "observedAt": "2026-08-06",
+    "source": "Synthetic fixture FX rate",
+    "usdToJpy": 100
+  },
+  "humanCost": {
+    "currency": "JPY",
+    "hourlyRate": 6000,
+    "source": "Synthetic fixture labor rate"
+  }
+}
