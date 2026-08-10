@@ -1,5 +1,5 @@
 import { execFile as execFileCallback } from "node:child_process";
-import { mkdtemp, mkdir, readFile } from "node:fs/promises";
+import { access, mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -76,6 +76,18 @@ describe("experiment runner", () => {
         'web_search="disabled"',
       ]),
     );
+    for (const feature of [
+      "fast_mode",
+      "multi_agent",
+      "memories",
+      "apps",
+      "plugins",
+      "browser_use",
+    ]) {
+      const index = args.indexOf(feature);
+      expect(index).toBeGreaterThan(0);
+      expect(args[index - 1]).toBe("--disable");
+    }
   });
 
   it("rejects artifact roots inside the source repository", () => {
@@ -200,5 +212,44 @@ describe("experiment runner", () => {
     await expect(
       readFile(path.join(result.workspace, "fake-codex-marker.txt"), "utf8"),
     ).resolves.toContain("marker");
+  }, 20_000);
+
+  it("removes temporary authentication material after execution", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "experiment-auth-"));
+    const assetRoot = path.join(root, "assets");
+    const authFile = path.join(root, "source-auth.json");
+    await mkdir(assetRoot);
+    await writeFile(authFile, '{"token":"fixture-secret"}\n');
+    const entry = createRunPlan({
+      seed: "auth",
+      repetitions: 1,
+      tasks: ["GA-F1"],
+      conditions: ["P0"],
+    }).entries[0];
+    const result = await runExperiment({
+      repositoryRoot: process.cwd(),
+      assetRoot,
+      workRoot: path.join(root, "worktrees"),
+      resultRoot: path.join(root, "results"),
+      entry,
+      settings,
+      prepareCommands: [],
+      codexCommand: process.execPath,
+      codexArgs: [path.join(process.cwd(), "tests/fixtures/fake-codex.mjs")],
+      authFile,
+      skipAssetVerification: true,
+    });
+    createdWorktrees.push(result.workspace);
+    await expect(
+      access(
+        path.join(root, "worktrees", `${entry.runId}-codex-home`, "auth.json"),
+      ),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(readFile(authFile, "utf8")).resolves.toContain(
+      "fixture-secret",
+    );
+    await expect(
+      readFile(path.join(result.resultDirectory, "manifest.json"), "utf8"),
+    ).resolves.toContain('"authentication": "temporary-auth-file"');
   }, 20_000);
 });

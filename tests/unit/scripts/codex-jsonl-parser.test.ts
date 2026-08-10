@@ -109,6 +109,16 @@ describe("Codex JSONL parser", () => {
       },
       jsonl: await fixture("codex-trace.jsonl"),
       diff: await fixture("codex-trace.diff"),
+      creditRate: {
+        confirmedAt: "2026-08-06",
+        source: "https://learn.chatgpt.com/docs/pricing",
+        model: "fixed-model",
+        perMillionTokens: {
+          uncachedInput: 125,
+          cachedInput: 12.5,
+          output: 750,
+        },
+      },
     });
     expect(run).toMatchObject({
       run_id: "GB-I1-P2-run03",
@@ -121,6 +131,11 @@ describe("Codex JSONL parser", () => {
       uncached_input_tokens: 160,
       output_tokens: 50,
       reasoning_output_tokens: 15,
+      credits: 0.05925,
+      credit_rate: {
+        confirmedAt: "2026-08-06",
+        model: "fixed-model",
+      },
       duration_seconds: 4.5,
       changed_files: 2,
       parser: {
@@ -128,5 +143,31 @@ describe("Codex JSONL parser", () => {
         unknown_events: { "future.event": 1, "item.future_item": 1 },
       },
     });
+  });
+
+  it("rejects a credit rate for a different model", async () => {
+    await expect(
+      createRunJson({
+        root: process.cwd(),
+        manifest: {
+          runId: "GA-F1-P0-run01",
+          taskId: "GA-F1",
+          condition: "P0",
+          startedAt: "2026-08-06T00:00:00.000Z",
+          settings: { model: "gpt-5.6-sol", reasoningEffort: "medium" },
+        },
+        jsonl: await fixture("codex-trace.jsonl"),
+        creditRate: {
+          confirmedAt: "2026-08-06",
+          source: "https://learn.chatgpt.com/docs/pricing",
+          model: "different-model",
+          perMillionTokens: {
+            uncachedInput: 125,
+            cachedInput: 12.5,
+            output: 750,
+          },
+        },
+      }),
+    ).rejects.toThrow("Credit rate model does not match run model");
   });
 });
