@@ -32,6 +32,7 @@
 | [実験計画](experiment/07-experiment-plan.md) | 実験マトリクス、実行手順、停止条件、分析、成果物 |
 | [基準状態と隔離](experiment/08-baseline-and-isolation.md) | 基準検証、禁止変更、マニフェスト、隠し評価資産の境界 |
 | [Pilot v1 実施結果](experiment/09-pilot-v1-results.md) | 45試行の監査、コスト、Go/No-Go判定、本実験前の変更点 |
+| [Pilot v2 条件再固定](experiment/10-pilot-v2-refreeze.md) | 評価器修正、新しい評価資産commit、再実施条件 |
 
 ## TraceCRM
 

@@ -10,12 +10,9 @@ import {
   type PilotConfig,
 } from "../../../scripts/pilot-study";
 
-async function config() {
+async function config(fileName = "pilot-config.json") {
   return JSON.parse(
-    await readFile(
-      path.join(process.cwd(), "experiment/pilot-config.json"),
-      "utf8",
-    ),
+    await readFile(path.join(process.cwd(), "experiment", fileName), "utf8"),
   ) as PilotConfig;
 }
 
@@ -36,6 +33,17 @@ describe("pilot study", () => {
         new Set(block.map(({ taskId, condition }) => `${taskId}:${condition}`)),
       ).toHaveLength(9);
     }
+  });
+
+  it("freezes pilot v2 with a new seed and evaluator commit", async () => {
+    const first = await config();
+    const second = await config("pilot-config-v2.json");
+    expect(second.version).toBe("pilot-v2");
+    expect(second.randomizationSeed).not.toBe(first.randomizationSeed);
+    expect(second.privateAssetCommit).not.toBe(first.privateAssetCommit);
+    expect(createPilotPlan(second).entries).not.toEqual(
+      createPilotPlan(first).entries,
+    );
   });
 
   it("reports missing raw and evaluation artifacts without treating zero credits as measured", async () => {
