@@ -5,7 +5,13 @@ import { pathToFileURL } from "node:url";
 
 import { z } from "zod";
 
-import { createRunPlan } from "./experiment-runner";
+import { evaluateExperimentRun } from "./evaluate-experiment-run";
+import {
+  createRunPlan,
+  runExperiment,
+  type FixedRunSettings,
+} from "./experiment-runner";
+import { createRunJson } from "./parse-codex-jsonl";
 
 export const pilotTaskIds = ["GA-F1", "GB-I1", "GC-F1"] as const;
 const conditions = ["P0", "P1", "P2"] as const;
@@ -102,6 +108,7 @@ const manifestSchema = z.object({
   condition: z.enum(conditions),
   repetition: z.number().int().min(1).max(5),
   status: z.enum(["completed", "failed", "timed-out"]),
+  codexCliVersion: z.string(),
   settings: z.object({
     model: z.string(),
     reasoningEffort: z.string(),
@@ -248,6 +255,7 @@ export async function verifyPilotStudy(options: {
     if (
       manifest.settings.model !== config.settings.model ||
       manifest.settings.reasoningEffort !== config.settings.reasoningEffort ||
+      manifest.codexCliVersion !== config.settings.codexCliVersion ||
       manifest.settings.timeoutMs !== expectedTimeoutMs(config, entry.runId)
     ) {
       throw new Error(`Frozen execution settings mismatch: ${entry.runId}`);
@@ -371,6 +379,132 @@ export async function verifyPilotStudy(options: {
   };
 }
 
+export async function executePilotStudy(options: {
+  repositoryRoot: string;
+  assetRoot: string;
+  authFile: string;
+  config: unknown;
+  plan: unknown;
+  workRoot: string;
+  resultRoot: string;
+  continueAfterBudgetReview?: boolean;
+}) {
+  const config = pilotConfigSchema.parse(options.config);
+  const plan = planSchema.parse(options.plan);
+  if (canonicalJson(plan) !== canonicalJson(createPilotPlan(config))) {
+    throw new Error("Run plan does not match the frozen pilot configuration.");
+  }
+  let completed = 0;
+  let credits = 0;
+  for (const entry of plan.entries) {
+    const resultDirectory = path.join(options.resultRoot, entry.runId);
+    const evaluatedPath = path.join(resultDirectory, "evaluated-run.json");
+    if (await exists(evaluatedPath)) {
+      const evaluated = runSchema.parse(
+        JSON.parse(await readFile(evaluatedPath, "utf8")),
+      );
+      credits += evaluated.credits;
+      completed += 1;
+      continue;
+    }
+    if (await exists(resultDirectory)) {
+      throw new Error(
+        `Partial run directory requires operator review before resume: ${resultDirectory}`,
+      );
+    }
+    const reviewAt =
+      config.budget.pilotCreditLimit * config.budget.reviewThresholdRatio;
+    if (!options.continueAfterBudgetReview && credits >= reviewAt) {
+      return {
+        status: "budget_review_required" as const,
+        completed,
+        credits,
+        nextRunId: entry.runId,
+      };
+    }
+    const timeoutMs = expectedTimeoutMs(config, entry.runId);
+    const settings: FixedRunSettings = {
+      model: config.settings.model,
+      reasoningEffort: config.settings.reasoningEffort,
+      sandbox: config.settings.sandbox,
+      networkAccess: config.settings.networkAccess,
+      webSearch: config.settings.webSearch,
+      approvalPolicy: config.settings.approvalPolicy,
+      timeoutMs,
+    };
+    const execution = await runExperiment({
+      repositoryRoot: options.repositoryRoot,
+      assetRoot: options.assetRoot,
+      authFile: options.authFile,
+      workRoot: options.workRoot,
+      resultRoot: options.resultRoot,
+      entry,
+      settings,
+    });
+    const manifestPath = path.join(resultDirectory, "manifest.json");
+    const jsonlPath = path.join(resultDirectory, "codex.jsonl");
+    const diffPath = path.join(resultDirectory, "diff.patch");
+    if (
+      !(await exists(manifestPath)) ||
+      !(await exists(jsonlPath)) ||
+      !(await exists(diffPath))
+    ) {
+      throw new Error(`Run failed before measurable artifacts: ${entry.runId}`);
+    }
+    const run = await createRunJson({
+      root: options.repositoryRoot,
+      manifest: JSON.parse(await readFile(manifestPath, "utf8")),
+      jsonl: await readFile(jsonlPath, "utf8"),
+      diff: await readFile(diffPath, "utf8"),
+      creditRate: config.creditRate,
+    });
+    const runJsonPath = path.join(resultDirectory, "run.json");
+    await writeFile(runJsonPath, `${JSON.stringify(run, null, 2)}\n`, {
+      flag: "wx",
+    });
+    const evaluated = await evaluateExperimentRun({
+      root: options.repositoryRoot,
+      assetRoot: options.assetRoot,
+      workspace: execution.workspace,
+      diffPath,
+      runJsonPath,
+      manifestPath,
+      outputPath: evaluatedPath,
+      logPath: path.join(resultDirectory, "evaluation-log.json"),
+    });
+    completed += 1;
+    credits += run.credits;
+    console.log(
+      JSON.stringify({
+        sequence: entry.sequence,
+        runId: entry.runId,
+        executionStatus: execution.status,
+        outcome: evaluated.outcome,
+        runCredits: run.credits,
+        totalCredits: credits,
+        completed,
+      }),
+    );
+    if (evaluated.evaluation_status === "error") {
+      return {
+        status: "evaluator_review_required" as const,
+        completed,
+        credits,
+        nextRunId: plan.entries[entry.sequence]?.runId ?? null,
+      };
+    }
+    if (run.credits > config.budget.perRunWarningCredits) {
+      return {
+        status: "per_run_budget_review_required" as const,
+        completed,
+        credits,
+        nextRunId: plan.entries[entry.sequence]?.runId ?? null,
+      };
+    }
+  }
+  return { status: "completed" as const, completed, credits, nextRunId: null };
+}
+
 function option(name: string) {
   const index = process.argv.indexOf(name);
   return index === -1 ? undefined : process.argv[index + 1];
@@ -430,7 +564,35 @@ async function main() {
     if (!report.go) process.exitCode = 1;
     return;
   }
-  throw new Error("usage: pilot-study.ts <plan|verify> [...options]");
+  if (command === "run-all") {
+    const planPath = option("--plan");
+    const assetRoot =
+      option("--asset-root") ?? process.env.EXPERIMENT_ASSET_ROOT;
+    const authFile = option("--auth-file") ?? process.env.CODEX_AUTH_FILE;
+    const workRoot = option("--work-root");
+    const resultRoot = option("--result-root");
+    if (!planPath || !assetRoot || !authFile || !workRoot || !resultRoot) {
+      throw new Error(
+        "run-all requires --plan, --asset-root, --auth-file, --work-root, and --result-root",
+      );
+    }
+    const result = await executePilotStudy({
+      repositoryRoot: process.cwd(),
+      assetRoot,
+      authFile,
+      config,
+      plan: JSON.parse(await readFile(planPath, "utf8")),
+      workRoot,
+      resultRoot,
+      continueAfterBudgetReview: process.argv.includes(
+        "--continue-after-budget-review",
+      ),
+    });
+    console.log(JSON.stringify(result));
+    if (result.status !== "completed") process.exitCode = 2;
+    return;
+  }
+  throw new Error("usage: pilot-study.ts <plan|run-all|verify> [...options]");
 }
 
 if (

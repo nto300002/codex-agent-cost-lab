@@ -80,6 +80,7 @@ describe("pilot study", () => {
         condition: entry.condition,
         repetition: entry.repetition,
         status: "completed",
+        codexCliVersion: value.settings.codexCliVersion,
         settings: {
           model: value.settings.model,
           reasoningEffort: value.settings.reasoningEffort,
