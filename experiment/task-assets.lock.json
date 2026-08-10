@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "repository": "nto300002/codex-agent-cost-lab-evaluation",
-  "commit": "1fa50f2ea36511a9ac98ecf4f058729016e3da21",
+  "commit": "9bd661b3d7ea4f094905340a2140e3ee6594012f",
   "assets": {
     "asset-manifest.json": "b2fdb6f767224217f7cee49af394f883893b07bfc92764f73fe8d15678ff528d",
-    "evaluators/evaluate.mjs": "0844d1352917348a90cb408b5ffbbc6d8fb2a6a3423a5166a9cbe2e9ce34cbfb",
+    "evaluators/evaluate.mjs": "113a5596843f9df242b83e7cba1d6a7087662d0a41689bafbc235feca9b0ab39",
     "scoring-rules.json": "162019b14cf43485d36d465012dab0cf8e6f894b795f982b8bf4a57b08b087b4",
     "scripts/score-candidate.mjs": "ca5617182471845bb1ceb97a87f5b7fe345ce3abf517ccc20c32e959bbad44ae",
-    "scripts/verify-evaluator.mjs": "b4ee639990e53ef49401bbab23350b2b63f0ceb4288845047f9a6d2cbd24906f",
+    "scripts/verify-evaluator.mjs": "bf3da939e1e1c008f68d3c21d4b97bb265d22626ea85699fc1bd59b82d83de7c",
     "scripts/verify-task.mjs": "2727c21bba6e86ac02a892235fa981d6e25d797da292c1c360087df3fb60ceea",
     "tasks/GA-F1/reference.patch": "ee141699b6fe14c19ed741ee2ee08b91cfbbf5179551a5f7b694f7fc2cbdb2c5",
     "tasks/GA-F1/setup.patch": "7f1c631a0b27b50d82bb1b46a4f7b13569c8ae268b40c9efc624591ee9f6f9fc",

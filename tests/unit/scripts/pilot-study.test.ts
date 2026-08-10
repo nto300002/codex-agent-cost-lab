@@ -46,6 +46,17 @@ describe("pilot study", () => {
     );
   });
 
+  it("freezes pilot v3 after the pilot v2 evaluator audit", async () => {
+    const second = await config("pilot-config-v2.json");
+    const third = await config("pilot-config-v3.json");
+    expect(third.version).toBe("pilot-v3");
+    expect(third.randomizationSeed).not.toBe(second.randomizationSeed);
+    expect(third.privateAssetCommit).not.toBe(second.privateAssetCommit);
+    expect(createPilotPlan(third).entries).not.toEqual(
+      createPilotPlan(second).entries,
+    );
+  });
+
   it("reports missing raw and evaluation artifacts without treating zero credits as measured", async () => {
     const value = await config();
     const plan = createPilotPlan(value);
