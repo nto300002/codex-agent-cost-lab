@@ -231,6 +231,8 @@ pnpm experiment:aggregate \
 
 ## ISSUE-028: LT用本実験を実施する
 
+状態: 実行準備完了（90試行計画・再開・停止・逸脱記録・成果物監査を実装済み）
+
 - 種別: study
 - 依存: ISSUE-027
 - 目的: 6タスク×3条件×5反復の比較データを取得する。
@@ -251,6 +253,15 @@ pnpm experiment:aggregate \
 ### 検証
 
 - 実験マトリクスの完全性と全成果物のハッシュを検査する。
+
+### 実行メモ
+
+- `experiment/main-config.json`へ6タスク、3条件、5反復、モデル、CLI、粒度別timeout、開始コミット、private evaluator commit、承認済み予算を固定する。
+- `pnpm experiment:main plan --output <outside-repo>/run-plan.json`で決定論的な90試行計画を生成する。
+- `run-all`は評価済みrunを保持して再開する。累計4,000 credits到達、1 runが200 credits超、評価器異常のいずれかで自動停止し、次run IDを返す。
+- run開始・完了・再開・停止はJSONL event logへ追記する。条件逸脱または再実行を決定した場合は`record --event deviation|rerun --run-id <id> --reason <理由>`で理由とoperatorを先に記録する。
+- `verify`は90件のrun identity、固定設定、worktree、必須raw・評価成果物を検査し、result root配下の全ファイルについてサイズとSHA-256を出力する。さらにタスク×条件18群（各5件）と粒度×条件9群（各10件）をrawから再集計する。
+- DB resetは各run専用の使い捨てworktree内だけで実行し、開発用checkoutやパイロット成果物は変更しない。
 
 ---
 
