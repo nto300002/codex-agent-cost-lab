@@ -34,6 +34,7 @@
 | [Pilot v1 実施結果](experiment/09-pilot-v1-results.md) | 45試行の監査、コスト、Go/No-Go判定、本実験前の変更点 |
 | [Pilot v2 条件再固定](experiment/10-pilot-v2-refreeze.md) | 評価器修正、新しい評価資産commit、再実施条件 |
 | [Pilot v2結果とPilot v3再固定](experiment/11-pilot-v2-results-and-v3-refreeze.md) | 45試行、偽陰性監査、No-Go判定、Pilot v3条件 |
+| [Pilot v3 最終結果](experiment/12-pilot-v3-results.md) | 45試行の完全性、コスト、外れ値、最終Go判定 |
 
 ## TraceCRM
 
