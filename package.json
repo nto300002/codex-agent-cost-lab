@@ -32,6 +32,7 @@
     "experiment:plan-runs": "tsx scripts/experiment-runner.ts plan",
     "experiment:parse-run": "tsx scripts/parse-codex-jsonl.ts",
     "experiment:pilot": "tsx scripts/pilot-study.ts",
+    "experiment:main": "tsx scripts/main-study.ts",
     "experiment:run": "tsx scripts/experiment-runner.ts run",
     "experiment:record-baseline": "tsx scripts/verify-baseline.ts --record",
     "experiment:render-prompts": "tsx scripts/render-prompts.ts --write",
