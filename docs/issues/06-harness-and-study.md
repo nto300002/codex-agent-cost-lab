@@ -267,6 +267,8 @@ pnpm experiment:aggregate \
 
 ## ISSUE-029: LT用レポートと再現手順を作成する
 
+状態: 実装済み（Main v1実測レポート・固定ハッシュ付き再生成手順・データ辞書）
+
 - 種別: documentation
 - 依存: ISSUE-028
 - 目的: 実測結果、限界、会社規模シナリオを再現可能な形で伝える。
